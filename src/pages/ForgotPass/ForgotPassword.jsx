@@ -77,7 +77,7 @@ export default function ForgotPassword() {
                 </Link>
               </Grid>
               <Grid item>
-                <Link to="/signup" style={{ textDecoration: 'none' }}>
+                <Link to="/Signup" style={{ textDecoration: 'none' }}>
                   <Button sx={{
                 backgroundColor: '#aa24c1',
                 color: '#fff',

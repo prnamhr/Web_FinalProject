@@ -27,16 +27,37 @@ export default function Login() {
             padding: '20px',
             borderRadius: '10px',
             boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          }}
-        > <img
+          }}>
+          <Link to="/" style={{ textDecoration: 'none', alignSelf: 'flex-start', marginLeft: '6px',}}>
+            <Typography variant="body2" color="#aa24c1" sx={{ mt: 3 ,fontSize:'18px'} }>
+              Back
+            </Typography>
+          </Link>
+        <img
             src="/pic/logo.jpg" 
             alt="Pinterest Logo"
-            style={{ width: '200px', height: '200px' }}
+            style={{ width: '180px', height: '180px' }}
           />
           <Typography component="h1" variant="h5">
-              Welcome to lumière
+          Sign Up for lumière
           </Typography>
           <Box component="form" noValidate sx={{ mt: 1 }}>
+          <TextField
+              margin="normal"
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+              autoComplete="name"
+            />
+          <TextField
+              margin="normal"
+              fullWidth
+              id="lastname"
+              label="Last Name"
+              name="email"
+              autoComplete="email"
+            />
             <TextField
               margin="normal"
               fullWidth
@@ -68,19 +89,8 @@ export default function Login() {
                 },
               }}
             >
-              Log In
+             Sign Up
             </Button>
-            <Link to="/password/reset" style={{ textDecoration: 'none' }}>
-              <Typography variant="body2" color="#aa24c1" sx={{ mt: 3 }}>
-                Forgot password?
-              </Typography>
-            </Link>
-       
-            <Link to="/signup" style={{ textDecoration: 'none' }}>
-              <Typography variant="body2" color="#aa24c1" sx={{ mt: 3 }}>
-              Don't you have an account?
-              </Typography>
-            </Link>
           </Box>
         </Box>
       </Container>
