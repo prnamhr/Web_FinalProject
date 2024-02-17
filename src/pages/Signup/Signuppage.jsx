@@ -18,16 +18,16 @@ export default function Login() {
       
         <CssBaseline />
         <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            backgroundcolor: '#fff',
-            flexDirection: 'column',
-            alignItems: 'center',
-            padding: '20px',
-            borderRadius: '10px',
-            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-          }}>
+  sx={{
+    marginTop: 8,
+    display: 'flex',
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  }}>
           <Link to="/" style={{ textDecoration: 'none', alignSelf: 'flex-start', marginLeft: '6px',}}>
             <Typography variant="body2" color="#aa24c1" sx={{ mt: 3 ,fontSize:'18px'} }>
               Back

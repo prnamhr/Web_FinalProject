@@ -19,13 +19,16 @@ export default function ForgotPassword() {
       <Container component="main" maxWidth="xs">
         <CssBaseline />
         <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        ><img
+  sx={{
+    marginTop: 8,
+    display: 'flex',
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '20px',
+    borderRadius: '10px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  }}><img
         src="/pic/logo.jpg" 
         alt="Pinterest Logo"
         style={{ width: '200px', height: '200px' }}
