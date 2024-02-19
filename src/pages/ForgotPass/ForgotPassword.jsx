@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import {useState} from 'react'
 const defaultTheme = createTheme();
-
+import './index.css'
 export default function ForgotPassword() {
   const [message, setMessage] = useState('');
   const [isSearchValid, setIsSearchValid] = useState(true); 
@@ -84,7 +84,7 @@ export default function ForgotPassword() {
         style={{ width: '200px', height: '200px' }}
       />
           <Typography component="h1" variant="h5">
-          Let's find your lumière account
+            Let's find your lumière account
           </Typography>
           
             <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>

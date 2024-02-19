@@ -7,8 +7,9 @@ import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
-import "./style.css";
+
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 const defaultTheme = createTheme();
 
 export default function Login() {
@@ -21,7 +22,7 @@ export default function Login() {
     password: true,
   });
   const[isUser, setIsUser] = useState(false);
-
+  const navigate = useNavigate(); 
   const validateForm = () => {
     const currentIsValid = {
       email: formData.email.trim() !== "",
@@ -55,9 +56,12 @@ export default function Login() {
         if (response.ok) {
           const data = await response.json();
           console.log(data);
-          if(data.length===0) {
-     
-            await setIsUser(true);
+          if(data.length > 0) {
+            setIsUser(false);
+          
+            navigate(`/${data[0].username}`); 
+          } else {
+            setIsUser(true);
           }
         } else {
           console.error(
@@ -71,6 +75,7 @@ export default function Login() {
       }
     }
   };
+
   return (
     <ThemeProvider theme={defaultTheme}>
       <Container component="main" maxWidth="xs">
