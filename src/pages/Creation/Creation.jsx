@@ -135,16 +135,16 @@ const Creation = () => {
         <div className='mainPage'>
             <div className='toolbar'>
                 <AppBar position='static' color='default' elevation={0}>
-                    <Toolbar>
+                    <Toolbar sx={{ backgroundColor: '#64806a', color: '#fff' }}>
                         <img src='/pic/logo.png' alt='Logo' style={{width: '30px', height: '30px'}}/>
                         <Grid container margin='10px'>
                             <Grid item style={{marginRight: '3px'}}>
                                 <Link to={`/${username}`} style={{textDecoration: 'none'}}>
-                                    <Button sx={{backgroundColor: '#aa24c1', color: '#fff'}}>Home</Button>
+                                    <Button sx={{ color: '#e27d60'}}>Home</Button>
                                 </Link>
                             </Grid>
                             <Grid item style={{marginRight: '10px'}}>
-                                <Button sx={{backgroundColor: '#e989b9', color: '#fff'}}>Create</Button>
+                                <Button sx={{backgroundColor: '#c5631a', color: '#fff'}}>Create</Button>
                             </Grid>
                         </Grid>
 
@@ -160,7 +160,7 @@ const Creation = () => {
                         </div>
 
                         <IconButton aria-label='show notifications' color='inherit'>
-                            <Badge badgeContent={4} color='secondary'>
+                            <Badge badgeContent={4} color='#e27d60'>
                                 <NotificationsIcon/>
                             </Badge>
                         </IconButton>
@@ -213,11 +213,10 @@ const Creation = () => {
                                             <CloudUploadIcon sx={{ fontSize: 50 }} />
                                             <Button
                                                 sx={{
-                                                    backgroundColor: '#aa24c1',
+                                                    backgroundColor: '#e27d60',
                                                     color: '#fff',
                                                     '&:hover': {
-                                                        backgroundColor: '#e989b9',
-                                                    },
+                                                        backgroundColor: '#e8a87c'}
                                                 }}
                                                 variant='contained'
                                                 component='span'
@@ -254,11 +253,10 @@ const Creation = () => {
 
                             <Button
                                 sx={{
-                                    backgroundColor: '#aa24c1',
+                                    backgroundColor: '#e27d60',
                                     color: '#fff',
                                     '&:hover': {
-                                        backgroundColor: '#e989b9',
-                                    },
+                                        backgroundColor: '#e8a87c'}
                                 }}
                                 onClick={handleSubmit}
                             >
@@ -266,14 +264,14 @@ const Creation = () => {
                             </Button>
 
 
-                            <Alert
+                            {openAlert&& <Alert
                                 severity="success"
                                 open={openAlert}
                                 onClose={handleAlertClose}
                                 sx={{ marginTop: 2 }}
                             >
                                 {successMessage}
-                            </Alert>
+                            </Alert>}
                         </Box>
                     </Paper>
                 </Box>

@@ -82,15 +82,15 @@ export default function ForgotPassword() {
         alt="Pinterest Logo"
         style={{ width: '200px', height: '200px' }}
       />
-          <Typography component="h1" variant="h5">
+          <Typography component="h1" variant="h5" style={{ color: '#e27d60' }}>
             Let's find your lumière account
           </Typography>
-          
-            <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
+
+            <Typography variant="body2" sx={{ mt: 3 }}  style={{ color: '#e27d60' }}>
             What's your email or username?
             </Typography>
 
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}> 
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               fullWidth
@@ -100,8 +100,8 @@ export default function ForgotPassword() {
               autoComplete="email"
               autoFocus
               variant="outlined"
-              value={formData.email} 
-              onChange={handleChange} 
+              value={formData.email}
+              onChange={handleChange}
             />      {message && <Alert severity={isSearchValid ? "success" : "error"}>{message}</Alert>}
              <Button
               type="submit"
@@ -110,10 +110,10 @@ export default function ForgotPassword() {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: '#aa24c1',
+                backgroundColor: '#e27d60',
                 color: '#fff',
                 '&:hover': {
-                  backgroundColor: '#e989b9',
+                  backgroundColor: '#e8a87c',
                 },
               }}
             >
@@ -123,10 +123,10 @@ export default function ForgotPassword() {
               <Grid item>
                 <Link to="/" style={{ textDecoration: 'none' }}>
                   <Button sx={{
-                backgroundColor: '#aa24c1',
+                backgroundColor: '#e27d60',
                 color: '#fff',
                 '&:hover': {
-                  backgroundColor: '#e989b9',
+                  backgroundColor: '#e8a87c',
                 },
               }}>Log In</Button>
                 </Link>
@@ -134,10 +134,10 @@ export default function ForgotPassword() {
               <Grid item>
                 <Link to="/Signup" style={{ textDecoration: 'none' }}>
                   <Button sx={{
-                backgroundColor: '#aa24c1',
+                backgroundColor: '#e27d60',
                 color: '#fff',
                 '&:hover': {
-                  backgroundColor: '#e989b9',
+                  backgroundColor: '#e8a87c',
                 },
               }}>Sign Up</Button>
                 </Link>

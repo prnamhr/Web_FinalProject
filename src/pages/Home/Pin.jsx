@@ -1,35 +1,35 @@
 import { useState, useEffect } from 'react';
-import { Card, CardMedia, CardContent, Typography } from '@mui/material';
+import { Card, CardMedia } from '@mui/material';
 
 const Pin = ({ post }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [imageSrc, setImageSrc] = useState('');
+    const [newRandomHeight, setNewRandomHeight] = useState(''); // State to store random height
 
     useEffect(() => {
         // Construct the complete URL for the image based on your Firebase Storage configuration
         const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
         const imageUrl = `${storageUrl}${encodeURIComponent(post.photo_content)}?alt=media`;
         setImageSrc(imageUrl);
+
+        const sizes = [400, 450, 500,300,350];
+        const randomHeight = sizes[Math.floor(Math.random() * sizes.length)];
+        setNewRandomHeight(randomHeight);
+
     }, [post.photo_content]);
 
     return (
-        <Card
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-        >
-            <CardMedia
-                component="img"
-                height={isHovered ? 300 : 140}
-                image={imageSrc}
-            />
-            {isHovered && (
-                <CardContent>
-                    <Typography variant="h6">{post.title}</Typography>
-                    <Typography variant="body2">{post.description}</Typography>
-                    <Typography variant="caption">{post.board_name}</Typography>
-                </CardContent>
-            )}
-        </Card>
+        <div className="pin" style={{ marginBottom: '15px' }}>
+            <Card
+                style={{ borderRadius: '20px' }}>
+                <CardMedia
+                    component="img"
+                    height={newRandomHeight}
+                    image={imageSrc}
+
+                />
+            </Card>
+        </div>
     );
 };
 

@@ -2,3 +2,19 @@ body {
   background: url('./pic/background.jpg') no-repeat center center fixed;
   background-size: cover;
 }
+
+.my-masonry-grid {
+  display: flex;
+  margin-left: -15px;
+  width: auto;
+}
+
+.my-masonry-grid_column {
+  padding-left: 15px;
+
+}
+
+.masonry-item {
+  margin-bottom: 100px;
+}
+
