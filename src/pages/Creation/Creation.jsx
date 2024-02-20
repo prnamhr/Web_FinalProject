@@ -103,7 +103,7 @@ const Creation = () => {
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
-        backgroundColor: '#F5E8DD',
+        backgroundColor: '#fff',
         '&:hover': {backgroundColor: 'rgba(255,255,255,0.25)'},
         marginRight: '16px',
         marginLeft: 'auto',
@@ -114,6 +114,7 @@ const Creation = () => {
         setOpenAlert(false);
     };
     const searchIconStyle = {
+        color:'#e27d60',
         padding: '0 16px',
         height: '100%',
         position: 'absolute',
@@ -140,7 +141,7 @@ const Creation = () => {
                         <Grid container margin='10px'>
                             <Grid item style={{marginRight: '3px'}}>
                                 <Link to={`/${username}`} style={{textDecoration: 'none'}}>
-                                    <Button sx={{ color: '#e27d60'}}>Home</Button>
+                                    <Button sx={{ color: '#fff'}}>Home</Button>
                                 </Link>
                             </Grid>
                             <Grid item style={{marginRight: '10px'}}>

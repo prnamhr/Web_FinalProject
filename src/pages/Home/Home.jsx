@@ -73,7 +73,7 @@ const Home = () => {
                 </Grid>
                 <Grid item style={{marginRight: '10px'}}>
                   <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
-                    <Button sx={{color:'#ba5d17'}}>
+                    <Button sx={{color:'#fff'}}>
                       Create
                     </Button>
                   </Link>
