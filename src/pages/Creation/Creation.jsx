@@ -9,7 +9,7 @@ import {
     InputLabel,
     FormControl,
     Paper,
-    Typography,
+    Typography, Alert,
 } from '@mui/material';
 import {
     AppBar,
@@ -34,6 +34,8 @@ const Creation = () => {
     const boardOptions = ['Board 1', 'Board 2', 'Board 3'];
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
+    const [successMessage, setSuccessMessage] = useState('');
+    const [openAlert, setOpenAlert] = useState(false);
     const fetchUserId = async () => {
         try {
             const response = await fetch(`http://localhost:3000/postCreation/getUserId?username=${username}`);
@@ -52,7 +54,7 @@ const Creation = () => {
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
-
+        console.log(selectedFile)
         const reader = new FileReader();
         reader.onloadend = () => {
             setImagePreview(reader.result);
@@ -65,7 +67,7 @@ const Creation = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userId = await fetchUserId();
-
+        console.log(file)
         try {
             const formData = new FormData();
             formData.append('user_id', userId);
@@ -85,6 +87,14 @@ const Creation = () => {
 
             const data = await response.json();
             console.log('New post created:', data);
+
+            setSuccessMessage('Post created successfully!');
+            setOpenAlert(true);
+            setTitle('');
+            setDescription('');
+            setBoard('');
+            setFile(null);
+            setImagePreview(null);
         } catch (error) {
             console.error(error);
         }
@@ -100,6 +110,9 @@ const Creation = () => {
         width: '660%',
     };
 
+    const handleAlertClose = () => {
+        setOpenAlert(false);
+    };
     const searchIconStyle = {
         padding: '0 16px',
         height: '100%',
@@ -251,6 +264,16 @@ const Creation = () => {
                             >
                                 Create
                             </Button>
+
+
+                            <Alert
+                                severity="success"
+                                open={openAlert}
+                                onClose={handleAlertClose}
+                                sx={{ marginTop: 2 }}
+                            >
+                                {successMessage}
+                            </Alert>
                         </Box>
                     </Paper>
                 </Box>

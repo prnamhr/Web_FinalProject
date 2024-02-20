@@ -1,33 +1,26 @@
-import{ useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardMedia, CardContent, Typography } from '@mui/material';
 
-const Pin = ({ post, imageSize }) => {
+const Pin = ({ post }) => {
     const [isHovered, setIsHovered] = useState(false);
+    const [imageSrc, setImageSrc] = useState('');
 
-    const getImageHeight = () => {
-        switch (imageSize) {
-            case 'small':
-                return 100;
-            case 'medium':
-                return 200;
-            case 'large':
-                return 300;
-            default:
-                return 140;
-        }
-    };
+    useEffect(() => {
+        // Construct the complete URL for the image based on your Firebase Storage configuration
+        const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+        const imageUrl = `${storageUrl}${encodeURIComponent(post.photo_content)}?alt=media`;
+        setImageSrc(imageUrl);
+    }, [post.photo_content]);
 
     return (
         <Card
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            {/* CardMedia component to display the post image */}
             <CardMedia
                 component="img"
-                alt={post.title}
-                height={getImageHeight()}
-                image={post.photo_url}
+                height={isHovered ? 300 : 140}
+                image={imageSrc}
             />
             {isHovered && (
                 <CardContent>
