@@ -1,4 +1,3 @@
-import React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -17,7 +16,7 @@ export default function ForgotPassword() {
   const [isSearchValid, setIsSearchValid] = useState(true); 
   const [formData, setFormData] = useState({ email: '' });
 
-  const handleSubmit = async (event) => {
+    const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSearchValid(true);
     setMessage('');
@@ -90,6 +89,7 @@ export default function ForgotPassword() {
             <Typography variant="body2" color="text.secondary" sx={{ mt: 3 }}>
             What's your email or username?
             </Typography>
+
             <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}> 
             <TextField
               margin="normal"

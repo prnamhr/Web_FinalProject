@@ -1,4 +1,3 @@
-import React from "react";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
@@ -8,7 +7,7 @@ import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 const defaultTheme = createTheme();
 
 export default function Signup() {
@@ -25,7 +24,7 @@ export default function Signup() {
     password: true,
   });
   const [isUniqueEmail, setIsUniqueEmail] = useState(true);
-
+  const navigate = useNavigate();
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevData) => ({
@@ -88,7 +87,8 @@ export default function Signup() {
           const errorData = await response.json();
           throw new Error(errorData.message);
         }
-  
+        const username=formData.email.split('@')[0]
+        navigate(`/${username}`);
         console.log("Signup successful");
       } catch (error) {
         console.error("Signup error:", error.message);
