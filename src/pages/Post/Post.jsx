@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -9,19 +9,27 @@ import {
     InputBase,
     Badge,
     Button,
-    Grid, CardMedia,
+    Grid, CardMedia
 } from '@mui/material';
+import Box from '@mui/material/Box';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Link, useParams } from 'react-router-dom';
-
+import PersonIcon from '@mui/icons-material/Person';
+import SendIcon from '@mui/icons-material/Send';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import './index.css'
 const Post = () => {
     const { postId, username } = useParams();
     const [postData, setPostData] = useState(null);
     const [imageSrc, setImageSrc] = useState('');
+    const [comments, setComments] = useState([]);
+    const [newComment, setNewComment] = useState('');
+    const [isLiked, setIsLiked] = useState(false);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -54,6 +62,14 @@ const Post = () => {
                 const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
                 const imageUrl = `${storageUrl}${encodeURIComponent(data.photo_content)}?alt=media`;
                 setImageSrc(imageUrl);
+                const commentsResponse = await fetch(`http://localhost:3000/post/${postId}/comments`);
+                if (!commentsResponse.ok) {
+                    throw new Error('Failed to fetch comments');
+                }
+
+                const addedComment = await commentsResponse.json();
+                console.log(addedComment)
+                setComments( addedComment);
             } catch (error) {
                 console.error('Error fetching post data:', error);
             }
@@ -61,6 +77,42 @@ const Post = () => {
 
         fetchPostData();
     }, [postId]);
+    const handleLike=async ()=>{
+
+    }
+    const handleCommentSubmit = async () => {
+        try {
+            if (!newComment) {
+                return;
+            }
+            console.log(newComment)
+            const response = await fetch(`http://localhost:3000/post/${username}/${postId}/comment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    comment_text: newComment,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit comment');
+            }
+            const updatedCommentsResponse = await fetch(`http://localhost:3000/post/${postId}/comments`);
+            if (!updatedCommentsResponse.ok) {
+                throw new Error('Failed to fetch updated comments');
+            }
+
+            const updatedComments = await updatedCommentsResponse.json();
+
+            setComments(updatedComments);
+
+            setNewComment('');
+        } catch (error) {
+            console.error('Error submitting comment:', error);
+        }
+    };
 
     return (
         <div>
@@ -116,33 +168,143 @@ const Post = () => {
                     </AppBar>
                 </div>
             </div>
+            <Link to={`/${username}`} style={{ textDecoration: 'none'}}>
+                <IconButton color="inherit" aria-label="for you" style={{ display: 'flex', alignItems: 'center' ,marginTop:'30px',marginLeft:'10px' }}>
+                    <ArrowBackIcon sx={{ fontSize: '25px', color: '#fff' }} />
+                    <Typography  style={{fontSize: '20px', marginLeft: '5px', fontFamily: 'inherit' ,color:'#fff'}}>For you</Typography>
+                </IconButton>
+            </Link>
             <Card className="box" style={{
                 margin: '20px auto',
+                marginTop: '-45px',
                 borderRadius: '30px',
-                maxWidth: '600px',
+                maxWidth: '800px',
                 width: '100%',
                 display: 'flex',
                 alignItems: 'stretch',
                 minHeight: '500px',
+                position: 'relative',
             }}>
-                <div className="photo" style={{ borderRadius: '20px', display: 'flex' }}>
+                <div className="photo" style={{flex: '1'}}>
                     <CardMedia
                         component="img"
                         image={imageSrc}
-                        style={{ width: '100%', height: '100%' }}
+                        style={{width: '100%', height: '100%'}}
                     />
                 </div>
-                <div style={{ width: '100%' }}>
+                <Button
+                    variant="contained"
+                    style={{
+                        borderRadius: '120px',
+                        backgroundColor: '#e27d60',
+                        position: 'absolute',
+                        top: '20px',
+                        right: '20px',
+                    }}
+                >
+                    Save
+                </Button>
+                <div style={{flex: '1', marginTop: '80px'}}>
                     <CardContent>
-                        <Typography variant="h4">Hi</Typography>
+
                         {postData && postData.title && (
-                            <Typography variant="h4">{postData.title}</Typography>
+                            <Typography variant="h4" style={{marginBottom: '10px'}}>{postData.title}</Typography>
                         )}
                         {postData && postData.description && (
                             <Typography variant="body1">{postData.description}</Typography>
                         )}
+
+                        <div style={{
+                            display: 'flex',
+                            marginTop: '30px',
+                            flexDirection: 'row',
+                            justifyContent: 'space-around'
+                        }}>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginLeft: '-60px'
+                            }}>
+                                <PersonIcon sx={{fontSize: 40, color: '#e27d60', marginRight: '5px'}}/>
+                                {postData && postData.username && (
+                                    <Typography variant="body1">{postData.username}</Typography>
+                                )}
+                            </div>
+                            <Button
+                                variant="contained"
+                                style={{
+                                    borderRadius: '120px',
+                                    backgroundColor: '#e27d60',
+                                }}
+                            >
+                                Follow
+                            </Button>
+
+                        </div>
+                        <div style={{marginTop: '30px '}}>
+                            <div style={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center'
+                            }}>
+                                <Typography variant="h6" >Comments</Typography>
+
+                            </div>
+                            <Box p={2} sx={{ maxHeight: '100px', overflowY: 'auto' }}>
+                                {comments.map((comment) => (
+                                    <Box key={comment.comment_id} mb={1} style={{ wordWrap: 'break-word' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                                            <PersonIcon sx={{ fontSize: 30, color: '#e27d60', marginRight: '5px' }} />
+                                            <div style={{ display: 'flex', flexDirection: 'column', marginRight: '5px' }}>
+                                                <Typography variant="h7">{comment.username}</Typography>
+                                                <Typography variant="body2">{comment.comment_text}</Typography>
+
+                                            </div>
+                                        </div>
+                                    </Box>
+                                ))}
+                            </Box>
+
+                        </div>
                     </CardContent>
+
+                    <Card style={{
+
+                        padding: '10px',
+                        paddingRight: '12%',
+                        boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .3)',
+                        position: 'absolute',
+                        bottom:'0',
+                    }}>
+                        <div style={{display:'flex' , justifyContent:'space-between'}}>
+                        <Typography variant="h6" style={{marginLeft:'10px'}}>{comments.length} comments</Typography>
+                            <IconButton onClick={handleLike} style={{ color: 'red' ,marginRight:'-24%'}}>
+                                {isLiked ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+                            </IconButton>
+                        </div>
+                        <div style={{display:'flex'}}>
+                        <PersonIcon sx={{fontSize: 40, color: '#e27d60', marginRight: '5px'}}/>
+                        <InputBase
+                            placeholder="Add a comment"
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            fullWidth
+                            style={{margin: '0 10px'}}
+                        />
+                        <IconButton onClick={handleCommentSubmit} style={{color:"#e27d60", marginRight:'-25%'}}>
+                            <SendIcon style={{
+                                borderRadius:'50%',
+                            }} />
+
+                        </IconButton>
+                        </div>
+                    </Card>
+
                 </div>
+
+
             </Card>
 
         </div>
