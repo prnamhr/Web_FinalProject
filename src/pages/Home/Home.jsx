@@ -1,7 +1,7 @@
 // Home.jsx
 import  { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { AppBar, Toolbar, IconButton, InputBase, Badge, Button, Grid, useMediaQuery } from '@mui/material';
+import { AppBar, Toolbar, IconButton, InputBase, Badge, Button, Grid } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -10,20 +10,20 @@ import Pin from './Pin';
 import './index.css';
 import Masonry from 'react-masonry-css';
 const Home = () => {
-  const { username } = useParams();
+  const {username} = useParams();
   const [pins, setPins] = useState([]);
   const searchStyle = {
     position: 'relative',
     borderRadius: '20px',
     backgroundColor: '#fff',
-    '&:hover': { backgroundColor: 'rgba(255,255,255,0.25)' },
+    '&:hover': {backgroundColor: 'rgba(255,255,255,0.25)'},
     marginRight: '16px',
     marginLeft: 'auto',
     width: '660%',
   };
 
   const searchIconStyle = {
-    color:'#ba5d17',
+    color: '#e27d60',
     padding: '0 16px',
     height: '100%',
     position: 'absolute',
@@ -48,24 +48,24 @@ const Home = () => {
     fetchPins();
   }, []);
   const breakpointColumnsObj = {
-    default: 5, // Number of columns by default
-    1100: 4, // Number of columns on screens between 1100px and 700px
-    700: 3, // Number of columns on screens between 700px and 500px
-    500: 2, // Number of columns on screens below 500px
+    default: 6, // Number of columns by default
+    1100: 5, // Number of columns on screens between 1100px and 700px
+    700: 4, // Number of columns on screens between 700px and 500px
+    500: 3, // Number of columns on screens below 500px
   };
   return (
       <div className="mainPage">
         <div className="toolbar">
           <AppBar position="static" color="default" elevation={0}>
-            <Toolbar sx={{ backgroundColor: '#64806a', color: '#fff' }}>
+            <Toolbar sx={{backgroundColor: '#64806a', color: '#fff'}}>
               <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
               <Grid container margin="10px">
                 <Grid item style={{marginRight: '3px'}}>
                   <Button
                       sx={{
-                        backgroundColor: '#ba5d17',
+                        backgroundColor: '#e27d60',
                         color: '#fff',
-                        borderReduis:'15px'
+                        borderReduis: '15px'
                       }}
                   >
                     Home
@@ -73,7 +73,7 @@ const Home = () => {
                 </Grid>
                 <Grid item style={{marginRight: '10px'}}>
                   <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
-                    <Button sx={{color:'#fff'}}>
+                    <Button sx={{color: '#fff'}}>
                       Create
                     </Button>
                   </Link>
@@ -92,7 +92,7 @@ const Home = () => {
               </div>
 
               <IconButton aria-label="show notifications" color="ierit">
-                <Badge badgeContent={4} sx={{colo:'#ba5d17'}}>
+                <Badge badgeContent={4} sx={{colo: '#ba5d17'}}>
                   <NotificationsIcon/>
                 </Badge>
               </IconButton>
@@ -111,7 +111,7 @@ const Home = () => {
             </Toolbar>
           </AppBar>
         </div>
-        <div className="mainContainer2" style={{marginTop: "50px"}}>
+        <div className="mainContainer2" style={{marginTop: '30px'}}>
           <Masonry
               breakpointCols={breakpointColumnsObj}
               className="my-masonry-grid"
@@ -119,7 +119,9 @@ const Home = () => {
           >
             {pins.map((pin) => (
                 <div key={pin.post_id}>
-                  <Pin post={pin}/>
+                  <Link to={`/${username}/post/${pin.post_id}`} style={{textDecoration: 'none'}}>
+                    <Pin post={pin}/>
+                  </Link>
                 </div>
             ))}
           </Masonry>

@@ -5,6 +5,7 @@ import SignUp from './pages/Signup/Signuppage';
 import ForgotPassword from './pages/ForgotPass/ForgotPassword';
 import Home from './pages/Home/Home.jsx';
 import Creation from './pages/Creation/Creation.jsx'
+import Post from './pages/Post/Post.jsx'
 import './index.css'
 import {
   createBrowserRouter,
@@ -31,6 +32,9 @@ const router = createBrowserRouter([
   {
     path:"/:username/creation",
     element:<Creation/>
+  },{
+    path:"/:username/post/:postId",
+    element: <Post/>
   }
 ]);
 
