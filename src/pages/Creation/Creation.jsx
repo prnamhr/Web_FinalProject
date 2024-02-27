@@ -9,22 +9,21 @@ import {
     InputLabel,
     FormControl,
     Paper,
-    Typography, Alert,
+    Typography, Alert, List, ListItem, ListItemText,
 } from '@mui/material';
 import {
     AppBar,
     Toolbar,
     IconButton,
     InputBase,
-    Badge,
     Grid,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import {useState} from 'react';
+import {useState,useEffect} from 'react';
+import PersonIcon from "@mui/icons-material/Person.js";
 
 const Creation = () => {
     const {username} = useParams();
@@ -36,6 +35,8 @@ const Creation = () => {
     const [imagePreview, setImagePreview] = useState(null);
     const [successMessage, setSuccessMessage] = useState('');
     const [openAlert, setOpenAlert] = useState(false);
+    const [searchInput, setSearchInput] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
     const fetchUserId = async () => {
         try {
             const response = await fetch(`http://localhost:3000/postCreation/getUserId?username=${username}`);
@@ -50,6 +51,26 @@ const Creation = () => {
             console.error('Error fetching user ID:', error.message);
         }
     };
+    const searchUsers = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch users');
+            }
+            const data = await response.json();
+            setSearchResults(data);
+        } catch (error) {
+            console.error('Error fetching users:', error);
+        }
+    };
+
+    useEffect(() => {
+        if (searchInput) {
+            searchUsers();
+        } else {
+            setSearchResults([]);
+        }
+    }, [searchInput]);
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -110,11 +131,8 @@ const Creation = () => {
         width: '660%',
     };
 
-    const handleAlertClose = () => {
-        setOpenAlert(false);
-    };
     const searchIconStyle = {
-        color:'#e27d60',
+        color: '#e27d60',
         padding: '0 16px',
         height: '100%',
         position: 'absolute',
@@ -122,6 +140,10 @@ const Creation = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
+    };
+
+    const handleAlertClose = () => {
+        setOpenAlert(false);
     };
 
     const mainStyle = {
@@ -154,17 +176,13 @@ const Creation = () => {
                                 <SearchIcon/>
                             </div>
                             <InputBase
-                                placeholder='Search'
-                                inputProps={{'aria-label': 'search'}}
-                                style={{paddingLeft: '60px', width: '100%'}}
+                                placeholder="Search"
+                                inputProps={{ 'aria-label': 'search' }}
+                                style={{ paddingLeft: '60px', width: '100%' }}
+                                value={searchInput}
+                                onChange={(e) => setSearchInput(e.target.value)}
                             />
                         </div>
-
-                        <IconButton aria-label='show notifications' color='inherit'>
-                            <Badge badgeContent={4} color='#e27d60'>
-                                <NotificationsIcon/>
-                            </Badge>
-                        </IconButton>
                         <IconButton
                             edge='end'
                             aria-label='account of current user'
@@ -172,7 +190,7 @@ const Creation = () => {
                             aria-haspopup='true'
                             color='inherit'
                         >
-                            <AccountCircle/>
+                            <AccountCircle style={{ fontSize: '40px' }} />
                         </IconButton>
                         <IconButton aria-label='display more actions' edge='end' color='inherit'>
                             <MoreVertIcon/>
@@ -277,6 +295,35 @@ const Creation = () => {
                     </Paper>
                 </Box>
             </div>
+            {searchResults.length > 0 && (
+                <Paper
+                    elevation={3}
+                    style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: '15px',
+                        width: '60%',
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                        position: 'absolute',
+                        top: '19%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        borderRadius: '10px',
+                        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                        backgroundColor: '#fff',
+                    }}
+                >
+                    <List>
+                        {searchResults.map((user) => (
+                            <ListItem key={user.id}>
+                                <PersonIcon sx={{fontSize: 35, color: '#e27d60', marginRight: '5px'}}/>
+                                <ListItemText primary={user.username} />
+                            </ListItem>
+                        ))}
+                    </List>
+                </Paper>
+            )}
         </div>
     );
 };
