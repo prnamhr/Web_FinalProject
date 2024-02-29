@@ -82,11 +82,11 @@ export default function ForgotPassword() {
         alt="Pinterest Logo"
         style={{ width: '200px', height: '200px' }}
       />
-          <Typography component="h1" variant="h5" style={{ color: '#e27d60' }}>
+          <Typography component="h1" variant="h5" style={{ color: '#8e3b13' }}>
             Let's find your lumière account
           </Typography>
 
-            <Typography variant="body2" sx={{ mt: 3 }}  style={{ color: '#e27d60' }}>
+            <Typography variant="body2" sx={{ mt: 3 }}  style={{ color: '#8e3b13' }}>
             What's your email or username?
             </Typography>
 
@@ -110,10 +110,10 @@ export default function ForgotPassword() {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: '#e27d60',
+                backgroundColor: '#8e3b13',
                 color: '#fff',
                 '&:hover': {
-                  backgroundColor: '#e8a87c',
+                  backgroundColor: '#c6815a',
                 },
               }}
             >
@@ -123,10 +123,10 @@ export default function ForgotPassword() {
               <Grid item>
                 <Link to="/" style={{ textDecoration: 'none' }}>
                   <Button sx={{
-                backgroundColor: '#e27d60',
+                backgroundColor: '#8e3b13',
                 color: '#fff',
                 '&:hover': {
-                  backgroundColor: '#e8a87c',
+                  backgroundColor: '#c6815a',
                 },
               }}>Log In</Button>
                 </Link>
@@ -134,10 +134,10 @@ export default function ForgotPassword() {
               <Grid item>
                 <Link to="/Signup" style={{ textDecoration: 'none' }}>
                   <Button sx={{
-                backgroundColor: '#e27d60',
+                backgroundColor: '#8e3b13',
                 color: '#fff',
                 '&:hover': {
-                  backgroundColor: '#e8a87c',
+                  backgroundColor: '#c6815a',
                 },
               }}>Sign Up</Button>
                 </Link>

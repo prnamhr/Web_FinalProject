@@ -132,7 +132,7 @@ const Creation = () => {
     };
 
     const searchIconStyle = {
-        color: '#e27d60',
+        color: '#75868e',
         padding: '0 16px',
         height: '100%',
         position: 'absolute',
@@ -141,7 +141,6 @@ const Creation = () => {
         alignItems: 'center',
         justifyContent: 'center',
     };
-
     const handleAlertClose = () => {
         setOpenAlert(false);
     };
@@ -158,7 +157,7 @@ const Creation = () => {
         <div className='mainPage'>
             <div className='toolbar'>
                 <AppBar position='static' color='default' elevation={0}>
-                    <Toolbar sx={{ backgroundColor: '#64806a', color: '#fff' }}>
+                    <Toolbar sx={{backgroundColor: '#193a3f', color: '#75868e'}}>
                         <img src='/pic/logo.png' alt='Logo' style={{width: '30px', height: '30px'}}/>
                         <Grid container margin='10px'>
                             <Grid item style={{marginRight: '3px'}}>
@@ -167,7 +166,9 @@ const Creation = () => {
                                 </Link>
                             </Grid>
                             <Grid item style={{marginRight: '10px'}}>
-                                <Button sx={{backgroundColor: '#e27d60', color: '#fff'}}>Create</Button>
+                                <Button sx={{ backgroundColor: '#8e3b13',
+                                    color: '#c6815a',
+                                    borderRadius: '20px'}}>Create</Button>
                             </Grid>
                         </Grid>
 
@@ -183,15 +184,15 @@ const Creation = () => {
                                 onChange={(e) => setSearchInput(e.target.value)}
                             />
                         </div>
-                        <IconButton
-                            edge='end'
-                            aria-label='account of current user'
-                            aria-controls='primary-search-account-menu'
-                            aria-haspopup='true'
-                            color='inherit'
-                        >
-                            <AccountCircle style={{ fontSize: '40px' }} />
-                        </IconButton>
+
+                        <Link to={`/${username}/user`} style={{ textDecoration: 'none' }}>
+                            <IconButton
+                                sx={{color:"#fff"}}
+                            >
+                                <AccountCircle style={{ fontSize: '40px' }} />
+                            </IconButton>
+                        </Link>
+
                         <IconButton aria-label='display more actions' edge='end' color='inherit'>
                             <MoreVertIcon/>
                         </IconButton>
@@ -232,10 +233,10 @@ const Creation = () => {
                                             <CloudUploadIcon sx={{ fontSize: 50 }} />
                                             <Button
                                                 sx={{
-                                                    backgroundColor: '#e27d60',
+                                                    backgroundColor: '#8e3b13',
                                                     color: '#fff',
                                                     '&:hover': {
-                                                        backgroundColor: '#e8a87c'}
+                                                        backgroundColor: '#c6815a'}
                                                 }}
                                                 variant='contained'
                                                 component='span'
@@ -272,10 +273,10 @@ const Creation = () => {
 
                             <Button
                                 sx={{
-                                    backgroundColor: '#e27d60',
+                                    backgroundColor: '#8e3b13',
                                     color: '#fff',
                                     '&:hover': {
-                                        backgroundColor: '#e8a87c'}
+                                        backgroundColor: '#c6815a'}
                                 }}
                                 onClick={handleSubmit}
                             >

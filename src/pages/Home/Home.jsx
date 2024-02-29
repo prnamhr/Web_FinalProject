@@ -1,4 +1,3 @@
-// Home.jsx
 import  { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { AppBar, Toolbar, IconButton, InputBase, Button, Grid,Paper,List,ListItem,ListItemText } from '@mui/material';
@@ -27,7 +26,7 @@ const Home = () => {
   };
 
   const searchIconStyle = {
-    color: '#e27d60',
+    color: '#75868e',
     padding: '0 16px',
     height: '100%',
     position: 'absolute',
@@ -83,15 +82,15 @@ const Home = () => {
       <div className="mainPage">
         <div className="toolbar">
           <AppBar position="static" color="default" elevation={0}>
-            <Toolbar sx={{backgroundColor: '#64806a', color: '#fff'}}>
+            <Toolbar sx={{backgroundColor: '#193a3f', color: '#75868e'}}>
               <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
               <Grid container margin="10px">
                 <Grid item style={{marginRight: '3px'}}>
                   <Button
                       sx={{
-                        backgroundColor: '#e27d60',
-                        color: '#fff',
-                        borderReduis: '15px'
+                        backgroundColor: '#8e3b13',
+                        color: '#c6815a',
+                        borderRadius: '20px'
                       }}
                   >
                     Home
@@ -120,16 +119,14 @@ const Home = () => {
 
               </div>
 
-              <IconButton
-                  edge="end"
-                  aria-label="account of current user"
-                  aria-controls="primary-search-account-menu"
-                  aria-haspopup="true"
-                  color="inherit"
-              >
-                <AccountCircle style={{ fontSize: '40px' }} />
+                <Link to={`/${username}/user`} style={{ textDecoration: 'none' }}>
+                  <IconButton
+                      sx={{color:"#fff"}}
+                  >
+                    <AccountCircle style={{ fontSize: '40px' }} />
+                  </IconButton>
+                </Link>
 
-              </IconButton>
               <IconButton aria-label="display more actions" edge="end" color="inherit">
                 <MoreVertIcon/>
               </IconButton>
@@ -173,7 +170,7 @@ const Home = () => {
           <List>
                 {searchResults.map((user) => (
                     <ListItem key={user.id}>
-                      <PersonIcon sx={{fontSize: 35, color: '#e27d60', marginRight: '5px'}}/>
+                      <PersonIcon sx={{fontSize: 35, color: '#c6815a', marginRight: '5px'}}/>
                       <ListItemText primary={user.username} />
                     </ListItem>
                 ))}

@@ -43,7 +43,7 @@ const Post = () => {
     };
 
     const searchIconStyle = {
-        color: '#e27d60',
+        color: '#75868e',
         padding: '0 16px',
         height: '100%',
         position: 'absolute',
@@ -51,7 +51,6 @@ const Post = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight:'500px'
     };
     const searchUsers = async () => {
         try {
@@ -190,7 +189,7 @@ const Post = () => {
             <div className="mainPage">
                 <div className="toolbar">
                     <AppBar position="static" color="default" elevation={0}>
-                        <Toolbar sx={{backgroundColor: '#64806a', color: '#fff'}}>
+                        <Toolbar sx={{backgroundColor: '#193a3f', color: '#75868e'}}>
                             <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
                             <Grid container margin="10px">
                                 <Grid item style={{marginRight: '3px'}}>
@@ -219,16 +218,14 @@ const Post = () => {
                                     onChange={(e) => setSearchInput(e.target.value)}
                                 />
                             </div>
+                            <Link to={`/${username}/user`} style={{ textDecoration: 'none' }}>
+                                <IconButton
+                                    sx={{color:"#fff"}}
+                                >
+                                    <AccountCircle style={{ fontSize: '40px' }} />
+                                </IconButton>
+                            </Link>
 
-                            <IconButton
-                                edge="end"
-                                aria-label="account of current user"
-                                aria-controls="primary-search-account-menu"
-                                aria-haspopup="true"
-                                color="inherit"
-                            >
-                                <AccountCircle style={{ fontSize: '40px' }} />
-                            </IconButton>
                             <IconButton aria-label="display more actions" edge="end" color="inherit">
                                 <MoreVertIcon/>
                             </IconButton>
@@ -266,7 +263,7 @@ const Post = () => {
                     variant="contained"
                     style={{
                         borderRadius: '120px',
-                        backgroundColor: '#e27d60',
+                        backgroundColor: '#8e3b13',
                         position: 'absolute',
                         top: '20px',
                         right: '20px',
@@ -296,7 +293,7 @@ const Post = () => {
                                 alignItems: 'center',
                                 marginLeft: '-60px'
                             }}>
-                                <PersonIcon sx={{fontSize: 40, color: '#e27d60', marginRight: '5px'}}/>
+                                <PersonIcon sx={{fontSize: 40, color: '#8e3b13', marginRight: '5px'}}/>
                                 {postData && postData.username && (
                                     <Typography variant="body1">{postData.username}</Typography>
                                 )}
@@ -305,7 +302,7 @@ const Post = () => {
                                 variant="contained"
                                 style={{
                                     borderRadius: '120px',
-                                    backgroundColor: '#e27d60',
+                                    backgroundColor: '#8e3b13',
                                 }}
                             >
                                 Follow
@@ -326,7 +323,7 @@ const Post = () => {
                                 {comments.map((comment) => (
                                     <Box key={comment.comment_id} mb={1} style={{wordWrap: 'break-word'}}>
                                         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                                            <PersonIcon sx={{fontSize: 30, color: '#e27d60', marginRight: '5px'}}/>
+                                            <PersonIcon sx={{fontSize: 30, color: '#c6815a', marginRight: '5px'}}/>
                                             <div style={{display: 'flex', flexDirection: 'column', marginRight: '5px'}}>
                                                 <Typography variant="h7">{comment.username}</Typography>
                                                 <Typography variant="body2">{comment.comment_text}</Typography>
@@ -360,7 +357,7 @@ const Post = () => {
                             </div>
                         </div>
                         <div style={{display: 'flex'}}>
-                            <PersonIcon sx={{fontSize: 40, color: '#e27d60', marginRight: '5px'}}/>
+                            <PersonIcon sx={{fontSize: 40, color: '#8e3b13', marginRight: '5px'}}/>
                             <InputBase
                                 placeholder="Add a comment"
                                 value={newComment}
@@ -368,7 +365,7 @@ const Post = () => {
                                 fullWidth
                                 style={{margin: '0 10px'}}
                             />
-                            <IconButton onClick={handleCommentSubmit} style={{color: "#e27d60", marginRight: '-25%'}}>
+                            <IconButton onClick={handleCommentSubmit} style={{color: "#8e3b13", marginRight: '-25%'}}>
                                 <SendIcon style={{
                                     borderRadius: '50%',
                                 }}/>

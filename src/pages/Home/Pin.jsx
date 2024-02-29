@@ -57,7 +57,7 @@ const Pin = ({ post }) => {
 
                             style={{
                                 borderRadius: '120px',
-                                backgroundColor:'#e27d60'
+                                backgroundColor:'#8e3b13'
                             }}
                         >
                             Save

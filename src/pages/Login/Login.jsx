@@ -108,7 +108,7 @@ export default function Login() {
             alt="Pinterest Logo"
             style={{ width: "200px", height: "200px" }}
           />
-          <Typography component="h1" variant="h5"  style={{ color: '#e27d60' }}>
+          <Typography component="h1" variant="h5"  style={{ color: '#8e3b13' }}>
             Welcome to lumière
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -141,23 +141,23 @@ export default function Login() {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: "#e27d60",
+                backgroundColor: "#8e3b13",
                 color: "#fff",
                 "&:hover": {
-                  backgroundColor: "#e8a87c",
+                  backgroundColor: "#c6815a",
                 },
               }}
             >
               Log In
             </Button>
             <Link to="/password/reset" style={{ textDecoration: "none" }}>
-              <Typography variant="body2" color="#e27d60" sx={{ mt: 3 }}>
+              <Typography variant="body2" color="#8e3b13" sx={{ mt: 3 }}>
                 Forgot password?
               </Typography>
             </Link>
 
             <Link to="/signup" style={{ textDecoration: "none" }}>
-              <Typography variant="body2" color="#e27d60" sx={{ mt: 3 }}>
+              <Typography variant="body2" color="#8e3b13" sx={{ mt: 3 }}>
                 Don't you have an account?
               </Typography>
             </Link>

@@ -6,7 +6,7 @@ import ForgotPassword from './pages/ForgotPass/ForgotPassword';
 import Home from './pages/Home/Home.jsx';
 import Creation from './pages/Creation/Creation.jsx'
 import Post from './pages/Post/Post.jsx'
-//import User from './pages/User/User.jsx'
+import User from './pages/User/User.jsx'
 import './index.css'
 import {
   createBrowserRouter,
@@ -37,10 +37,10 @@ const router = createBrowserRouter([
     path:"/:username/post/:postId",
     element: <Post/>
   },
-  // {
-  //   path:"/:username/user",
-  //   element: <User/>
-  // }
+  {
+    path:"/:username/user",
+    element: <User/>
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')).render(

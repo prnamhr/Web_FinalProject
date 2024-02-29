@@ -125,7 +125,7 @@ export default function Signup() {
           >
             <Typography
               variant="body2"
-              style={{ color: '#e27d60' }}
+              style={{ color: '#8e3b13' }}
               sx={{ mt: 3, fontSize: "18px" }}
             >
               Back
@@ -136,7 +136,7 @@ export default function Signup() {
             alt="Pinterest Logo"
             style={{ width: "180px", height: "180px" }}
           />
-          <Typography component="h1" variant="h5 "style={{ color: '#e27d60' }}>
+          <Typography component="h1" variant="h5 "style={{ color: '#8e3b13' }}>
             Sign Up for lumière
           </Typography>
           <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 1 }}>
@@ -193,10 +193,10 @@ export default function Signup() {
               sx={{
                 mt: 3,
                 mb: 2,
-                backgroundColor: "#e27d60",
+                backgroundColor: "#8e3b13",
                 color: "#fff",
                 "&:hover": {
-                  backgroundColor: "#e8a87c",
+                  backgroundColor: "#c6815a",
                 },
               }}
             >
