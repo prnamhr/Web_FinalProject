@@ -7,6 +7,8 @@ import Home from './pages/Home/Home.jsx';
 import Creation from './pages/Creation/Creation.jsx'
 import Post from './pages/Post/Post.jsx'
 import User from './pages/User/User.jsx'
+import EditProfil from './pages/EditProfile/EditProfile.jsx'
+import AccountManagement from './pages/AccountManagement/AccountManagement.jsx'
 import './index.css'
 import {
   createBrowserRouter,
@@ -40,6 +42,15 @@ const router = createBrowserRouter([
   {
     path:"/:username/user",
     element: <User/>
+  },
+  {
+    path:"/:username/editProfile",
+    element: <EditProfil/>
+  }
+  ,
+  {
+    path:"/:username/accountManagement",
+    element: <AccountManagement/>
   }
 ]);
 

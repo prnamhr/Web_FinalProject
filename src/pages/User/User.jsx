@@ -218,6 +218,7 @@ const User = () => {
                             </div>
                         </div>
                     )}
+                    <Link to={`/${username}/editProfile`}>
                     <Button sx={{
                         backgroundColor: '#8e3b13',
                         marginTop: '10px',
@@ -228,6 +229,7 @@ const User = () => {
                             color: '#8e3b13',
                         },
                     }}>Edit profile</Button>
+                    </Link>
                     <Stack direction="row" style={{ marginTop: '40px' }}>
                         <Button sx={{
 
