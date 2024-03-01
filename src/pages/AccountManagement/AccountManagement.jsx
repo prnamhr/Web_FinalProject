@@ -14,24 +14,31 @@ import {
     Grid,
     InputBase,
     IconButton,
-    Paper, List, ListItem, ListItemText
+    Paper, List, ListItem, ListItemText, Avatar, Alert,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
 } from '@mui/material';
 import PersonIcon from "@mui/icons-material/Person.js";
 import {Link, useParams} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
-import AccountCircle from "@mui/icons-material/AccountCircle.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
 
 
 const AccountManagement = () => {
-    const [name, setName] = useState('');
-    const [surname, setsurname] = useState('');
-    const [bio, setBio] = useState('');
-    const [use, setUsername] = useState('');
-    const [profilePicture, setProfilePicture] = useState(null);
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [gender, setGender] = useState('');
     const {username} = useParams();
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [imageSrc, setImageSrc] = useState('');
+    const [userData, setUserData] = useState(null);
+    const [isUpdateSuccess, setIsUpdateSuccess] = useState(false);
+    const [isInvalidEmail, setIsInvalidEmail] = useState(false);
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -41,13 +48,99 @@ const AccountManagement = () => {
         marginLeft: 'auto',
         width: '660%',
     };
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle the form submission here
-        // For example, you could send the updated profile information to your backend
-        console.log('Profile updated:', {name, bio, profilePicture});
-        history.push('/'); // Redirect to the home page or profile page after updating
+
+    const handleDeleteAccount = async () => {
+        setDeleteDialogOpen(true);
     };
+    const handleCancelDelete = () => {
+        setDeleteDialogOpen(false);
+    };
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data = await response.json();
+                setUserData(data[0]);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        console.log(userData)
+        if (userData && userData.profile_picture) {
+            const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+            const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
+            setImageSrc(imageUrl);
+        }
+
+        fetchUserData();
+    }, [username, userData, setImageSrc, setUserData]);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            setIsInvalidEmail(true);
+            return;
+        }
+
+        const requestBody = {
+            email: email,
+            password: password,
+            gender: gender,
+        };
+        try {
+            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/account`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update profile');
+            }
+
+
+            setIsUpdateSuccess(true);
+            setIsInvalidEmail(false);
+            setTimeout(() => {
+                setIsUpdateSuccess(false);
+            }, 3000);
+            setEmail('');
+            setPassword('');
+
+
+        } catch (error) {
+            console.error('Error updating profile:', error);
+        }
+
+    };
+    const handleConfirmDelete = async () => {
+        try {
+            // Perform the delete operation
+
+            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to delete account');
+            }
+        } catch (error) {
+            console.error('Error deleting account:', error);
+        } finally {
+            setDeleteDialogOpen(false);
+        }
+    };
+
 
     const searchIconStyle = {
         color: '#75868e',
@@ -116,16 +209,31 @@ const AccountManagement = () => {
 
                         </div>
 
-                        <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls="primary-search-account-menu"
-                            aria-haspopup="true"
-                            sx={{color: '#fff'}}
-                        >
-                            <AccountCircle style={{fontSize: '40px'}}/>
-
-                        </IconButton>
+                        {imageSrc ? (
+                            <Link to={`/${username}/user`}>
+                                <img
+                                    src={imageSrc}
+                                    alt="Profile Image"
+                                    style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                />
+                            </Link>
+                        ) : (
+                            <Link to={`/${username}/user`}>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls="primary-search-account-menu"
+                                    aria-haspopup="true"
+                                    sx={{ color: '#fff' }}
+                                >
+                                    <Avatar
+                                        alt="Default Profile Picture"
+                                        src={'/path/to/default/avatar.jpg'}
+                                        sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
+                                    />
+                                </IconButton>
+                            </Link>
+                        )}
                         <IconButton aria-label="display more actions" edge="end" color="inherit">
                             <MoreVertIcon/>
                         </IconButton>
@@ -167,12 +275,22 @@ const AccountManagement = () => {
                     <Typography variant="h5" gutterBottom sx={{color: '#8e3b13'}}>
                         Your account
                     </Typography>
-                    <form onSubmit={handleSubmit}>
+                    <form>
+                        {isUpdateSuccess && (
+                            <Alert severity="success" sx={{marginBottom: '15px'}}>
+                                Profile updated successfully!
+                            </Alert>
+                        )}
+                        {isInvalidEmail && (
+                            <Alert severity="error" sx={{ marginBottom: '15px' }}>
+                                Invalid email format. Please enter a valid email address.
+                            </Alert>
+                        )}
                         <TextField
                             fullWidth
                             label="Email"
-                            value={surname}
-                            onChange={(e) => setsurname(e.target.value)}
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                             margin="normal"
                             sx={{
                                 borderRadius: '10px',
@@ -185,8 +303,8 @@ const AccountManagement = () => {
                             <TextField
                                 fullWidth
                                 label="Password"
-                                value={surname}
-                                onChange={(e) => setsurname(e.target.value)}
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 margin="normal"
                                 sx={{
                                     borderRadius: '10px',
@@ -195,21 +313,6 @@ const AccountManagement = () => {
                                     }
                                 }}
                             />
-                            <label htmlFor="profile-picture">
-                                <Button variant="contained" component="span"
-                                        sx={{
-                                            backgroundColor: '#8e3b13',
-                                            marginTop: '10px',
-                                            color: '#c6815a',
-                                            borderRadius: '20px',
-                                            "&:hover": {
-                                                backgroundColor: "#c6815a",
-                                                color: '#8e3b13',
-                                            },
-                                        }}>
-                                    change
-                                </Button>
-                            </label>
                         </Box>
                         <Typography variant="h5" gutterBottom sx={{color: '#8e3b13'}}>
                             Personal information
@@ -217,48 +320,46 @@ const AccountManagement = () => {
 
                         <Box style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
                             <FormControl component="fieldset">
-                                <FormLabel component="legend"  sx={{color: '#8e3b13',
-                                    '&.Mui-checked': {
-                                        color:'#8e3b13' ,
-                                    },}}>Gender</FormLabel>
+                                <FormLabel component="legend" sx={{ color: '#8e3b13' }}>
+                                    Gender
+                                </FormLabel>
                                 <RadioGroup
                                     row
                                     aria-label="gender"
                                     name="radio-buttons-group"
-                                    defaultValue="female"
-                                    sx={{color: '#8e3b13',
-                                        '&.Mui-checked': {
-                                            color:'#c6815a' ,
-                                        },}}
+                                    value={gender}
+                                    onChange={(e) => setGender(e.target.value)}
+                                    sx={{ color: '#8e3b13' }}
                                 >
                                     <FormControlLabel
                                         value="female"
-                                        control={<Radio  sx={{color: '#8e3b13',
+                                        control={<Radio sx={{ color: '#8e3b13',
                                             '&.Mui-checked': {
-                                                color:'#c6815a' ,
-                                            },}} />}
-                                        label={<Typography sx={{color: '#8e3b13'}}>Female</Typography>}
+                                            color:'#c6815a' ,
+                                        },}} />}
+                                        label={<Typography sx={{ color: '#8e3b13' }}>Female</Typography>}
                                     />
                                     <FormControlLabel
                                         value="male"
-                                        control={<Radio  sx={{color: '#8e3b13',
+                                        control={<Radio sx={{ color: '#8e3b13',
                                             '&.Mui-checked': {
-                                                color:'#c6815a' ,
-                                            },}}/>}
-                                        label={<Typography sx={{color: '#8e3b13'}}>Male</Typography>}
+                                            color:'#c6815a' ,
+                                        }, }} />}
+                                        label={<Typography sx={{ color: '#8e3b13' }}>Male</Typography>}
                                     />
                                     <FormControlLabel
                                         value="other"
-                                        control={<Radio  sx={{color: '#8e3b13',
+                                        control={<Radio sx={{color: '#8e3b13',
                                             '&.Mui-checked': {
-                                                color:'#8e3b13' ,
-                                            },}}/>}
-                                        label={<Typography sx={{color: '#8e3b13'}}>Other</Typography>}
+                                            color:'#c6815a' ,
+                                        }, }} />}
+                                        label={<Typography sx={{ color: '#8e3b13' }}>Other</Typography>}
                                     />
                                 </RadioGroup>
                             </FormControl>
                         </Box>
                         <Button variant="contained" component="span"
+                                onClick={handleSubmit}
                                 sx={{
                                     backgroundColor: '#8e3b13',
                                     marginTop: '10px',
@@ -283,6 +384,7 @@ const AccountManagement = () => {
                             </div>
                             <label htmlFor="profile-picture">
                                 <Button variant="contained" component="span"
+                                        onClick={handleDeleteAccount}
                                         sx={{
                                             backgroundColor: '#8e3b13',
                                             marginTop: '10px',
@@ -300,6 +402,29 @@ const AccountManagement = () => {
                     </form>
                 </Box>
             </Box>
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={handleCancelDelete}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">Confirm Deletion</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        Are you sure you want to delete your account? This action cannot be undone.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelDelete} color="primary">
+                        Cancel
+                    </Button>
+                    <Link to={`/`} style={{textDecoration: 'none'}}>
+                    <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+                    </Link>
+                </DialogActions>
+            </Dialog>
             {searchResults.length > 0 && (
                 <Paper
                     elevation={3}

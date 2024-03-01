@@ -10,24 +10,30 @@ import {
     Grid,
     InputBase,
     IconButton,
-    Paper, List, ListItem, ListItemText
+    Paper, List, ListItem, ListItemText, Alert
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 import PersonIcon from "@mui/icons-material/Person.js";
 import {Link, useParams} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
-import AccountCircle from "@mui/icons-material/AccountCircle.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
-
 
 const EditProfile = () => {
     const [name, setName] = useState('');
     const [surname, setsurname] = useState('');
     const [bio, setBio] = useState('');
     const [use, setUsername] = useState('');
-    const [profilePicture, setProfilePicture] = useState(null);
+    const [file, setFile] = useState(null);
+    const [imagePreview, setImagePreview] = useState(null);
     const {username} = useParams();
+    const [userData, setUserData] = useState(null);
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [isUsernameTaken, setIsUsernameTaken] = useState(false);
+    const [isUpdateSuccess, setIsUpdateSuccess] = useState(false);
+    const [imageSrc, setImageSrc] = useState('');
+    const navigate = useNavigate();
+
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -37,19 +43,120 @@ const EditProfile = () => {
         marginLeft: 'auto',
         width: '660%',
     };
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Handle the form submission here
-        // For example, you could send the updated profile information to your backend
-        console.log('Profile updated:', {name, bio, profilePicture});
-        history.push('/'); // Redirect to the home page or profile page after updating
-    };
+        if (use) {
+            try {
+                const response = await fetch(`http://localhost:3000/${use}/finduser`);
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.length > 0) {
+                        setIsUsernameTaken(true)
 
-    const handleProfilePictureChange = (e) => {
-        if (e.target.files[0]) {
-            setProfilePicture(URL.createObjectURL(e.target.files[0]));
+                        return;
+                    }
+                } else {
+
+                    alert('Error checking username availability. Please try again.');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking username:', error);
+                alert('Error checking username availability. Please try again.');
+                return;
+            }
+        }
+
+        const requestBody = {
+            first_name: name,
+            last_name: surname,
+            bio: bio,
+            username: use,
+        };
+
+        try {
+            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/update`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+            if (!response.ok) {
+                throw new Error('Failed to update profile');
+            }
+            if(use)
+            {
+                navigate(`/${use}/editProfile`);
+
+            }
+
+            if (file) {
+                console.log("hi")
+                const formData = new FormData();
+                formData.append('photo', file); // Use the file from the state
+
+                const response2 = await fetch(`http://localhost:3000/user/${userData.user_id}/photo`, {
+                    method: 'POST',
+                    body: formData, // Send formData with the file
+                });
+
+                if (!response2.ok) {
+                    throw new Error('Failed to upload profile picture');
+                }
+            }
+            setIsUpdateSuccess(true);
+            setTimeout(() => {
+                setIsUpdateSuccess(false);
+            }, 3000);
+            setName('');
+            setsurname('');
+            setBio('');
+            setUsername('');
+
+        } catch (error) {
+            console.error('Error updating profile:', error);
         }
     };
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data = await response.json();
+                setUserData(data[0]);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        console.log(userData)
+        if (userData && userData.profile_picture) {
+            const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+            const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
+            setImageSrc(imageUrl);
+        }
+
+        fetchUserData();
+    }, [username, userData, setImageSrc, setUserData]);
+
+    const handleProfilePictureChange = (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+        const reader = new FileReader();
+        console.log(selectedFile)
+        console.log(file)
+        reader.onloadend = () => {
+            setImagePreview(reader.result);
+        };
+        if (selectedFile) {
+            reader.readAsDataURL(selectedFile);
+
+        }
+    };
+
     const searchIconStyle = {
         color: '#75868e',
         padding: '0 16px',
@@ -117,16 +224,31 @@ const EditProfile = () => {
 
                         </div>
 
-                        <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls="primary-search-account-menu"
-                            aria-haspopup="true"
-                            sx={{color: '#fff'}}
-                        >
-                            <AccountCircle style={{fontSize: '40px'}}/>
-
-                        </IconButton>
+                        {imageSrc ? (
+                            <Link to={`/${username}/user`}>
+                                <img
+                                    src={imageSrc}
+                                    alt="Profile Image"
+                                    style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                />
+                            </Link>
+                        ) : (
+                            <Link to={`/${username}/user`}>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls="primary-search-account-menu"
+                                    aria-haspopup="true"
+                                    sx={{ color: '#fff' }}
+                                >
+                                    <Avatar
+                                        alt="Default Profile Picture"
+                                        src={'/path/to/default/avatar.jpg'}
+                                        sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
+                                    />
+                                </IconButton>
+                            </Link>
+                        )}
                         <IconButton aria-label="display more actions" edge="end" color="inherit">
                             <MoreVertIcon/>
                         </IconButton>
@@ -159,7 +281,6 @@ const EditProfile = () => {
                         borderRadius: '8px',
                     }}
                 >
-
                     <Typography variant="h4" gutterBottom sx={{color: '#8e3b13'}}>
                         Edit Profile
                     </Typography>
@@ -168,14 +289,38 @@ const EditProfile = () => {
                         your
                         profile.
                     </Typography>
-                    <form onSubmit={handleSubmit}>
+                    <form>
                         <Box sx={{mb: 2}}>
-                            <div style={{display: 'flex', alignItems: 'center', gap: '5px'}}>
-                                <Avatar
-                                    alt="Profile Picture"
-                                    src={'/path/to/default/avatar.jpg'}
-                                    sx={{width: 70, height: 70, color: '#c6815a', backgroundColor: '#8e3b13'}}
-                                />
+                            {isUpdateSuccess && (
+                                <Alert severity="success" sx={{marginBottom: '15px'}}>
+                                    Profile updated successfully!
+                                </Alert>
+                            )}
+                            <div style={{display: 'flex', alignItems: 'center', gap: '15px'}}>
+                                {imagePreview ? (
+                                    <img
+                                        src={imagePreview}
+                                        alt='Image Preview'
+                                        style={{ height: '80px', width: '80px', borderRadius: '50%', objectFit: 'cover' }}
+                                    />
+                                ) : (
+                                    <>
+                                        {imageSrc ? (
+                                            <img
+                                                src={imageSrc}
+                                                alt='Profile Picture'
+                                                style={{ height: '80px', width: '80px', borderRadius: '50%', objectFit: 'cover' }}
+                                            />
+                                        ) : (
+                                            <Avatar
+                                                alt="Default Profile Picture"
+                                                src={'/path/to/default/avatar.jpg'}
+                                                sx={{ width: 70, height: 70, color: '#c6815a', backgroundColor: '#8e3b13' }}
+                                            />
+                                        )}
+                                    </>
+                                )}
+
                                 <input
                                     accept="image/*"
                                     style={{display: 'none'}}
@@ -200,6 +345,7 @@ const EditProfile = () => {
                                 </label>
                             </div>
                         </Box>
+
                         <div style={{display: 'flex', gap: '10px', marginBottom: '20px'}}>
                             <TextField
                                 fullWidth
@@ -244,6 +390,11 @@ const EditProfile = () => {
                                 }
                             }}
                         />
+                        {isUsernameTaken && (
+                            <Alert severity="error" sx={{marginTop: '15px', marginButtm: '15px'}}>
+                                Username is already taken. Please choose another one.
+                            </Alert>
+                        )}
                         <TextField
                             fullWidth
                             label="Username"
@@ -258,8 +409,8 @@ const EditProfile = () => {
                             }}
                         />
 
-
                         <Button variant="contained" component="span"
+                                onClick={handleSubmit}
                                 sx={{
                                     backgroundColor: '#8e3b13',
                                     marginTop: '10px',
@@ -273,6 +424,7 @@ const EditProfile = () => {
                                 }}>
                             Save Changes
                         </Button>
+
                     </form>
                 </Box>
             </Box>

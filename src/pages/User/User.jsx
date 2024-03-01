@@ -17,6 +17,7 @@ const User = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [followersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
+    const [imageSrc, setImageSrc] = useState('');
 
     const searchStyle = {
         position: 'relative',
@@ -81,6 +82,11 @@ const User = () => {
                             const followers = await response.json();
                             setFollowersCount(followers.length);
                         }
+                        if (userData && userData.profile_picture) {
+                            const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+                            const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
+                            setImageSrc(imageUrl);
+                        }
                     } catch (error) {
                         console.error('Error fetching followers count:', error);
                     }
@@ -143,17 +149,28 @@ const User = () => {
                             />
 
                         </div>
+                        {imageSrc ? (
+                            <Link to={`/${username}/user`}>
+                                <img
+                                    src={imageSrc}
+                                    alt="Profile Image"
+                                    style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                />
+                            </Link>
+                        ) : (
+                            <Link to={`/${username}/user`}>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls="primary-search-account-menu"
+                                    aria-haspopup="true"
+                                    sx={{ color: '#fff' }}
+                                >
+                                    <AccountCircle style={{fontSize: '40px'}}/>
+                                </IconButton>
+                            </Link>
+                        )}
 
-                        <IconButton
-                            edge="end"
-                            aria-label="account of current user"
-                            aria-controls="primary-search-account-menu"
-                            aria-haspopup="true"
-                            sx={{color: '#fff'}}
-                        >
-                            <AccountCircle style={{fontSize: '40px'}}/>
-
-                        </IconButton>
                         <IconButton aria-label="display more actions" edge="end" color="inherit">
                             <MoreVertIcon/>
                         </IconButton>
@@ -175,11 +192,26 @@ const User = () => {
                         aria-haspopup="true"
                         color="inherit"
                     >
-                        {userData && userData.profile_picture ? (
-                            <Avatar alt={userData.username} src={userData.profile_picture}
-                                    style={{width: '40px', height: '40px'}}/>
+                        {imageSrc ? (
+                            <Link to={`/${username}/user`}>
+                                <img
+                                    src={imageSrc}
+                                    alt="Profile Image"
+                                    style={{ width: '140px', height: '140px', borderRadius: '50%' }}
+                                />
+                            </Link>
                         ) : (
-                            <AccountCircle style={{marginTop: '-20px', fontSize: '120px', color: '#75868e'}}/>
+                            <Link to={`/${username}/user`}>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls="primary-search-account-menu"
+                                    aria-haspopup="true"
+                                    sx={{ color: '#fff' }}
+                                >
+                                    <AccountCircle style={{fontSize: '140px'}}/>
+                                </IconButton>
+                            </Link>
                         )}
                     </IconButton>
                     {userData && (
