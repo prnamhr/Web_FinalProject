@@ -8,8 +8,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PersonIcon from "@mui/icons-material/Person.js";
-
-const User = () => {
+import { Dialog, DialogTitle, DialogContent } from '@mui/material';
+import Masonry from "react-masonry-css";
+import Pin from "../Home/Pin.jsx";
+const UserPosts = () => {
     const {username} = useParams();
     const [userData, setUserData] = useState(null);
     const [searchInput, setSearchInput] = useState('');
@@ -17,7 +19,12 @@ const User = () => {
     const [followersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [imageSrc, setImageSrc] = useState('');
-
+    const [openFollowersDialog, setOpenFollowersDialog] = useState(false);
+    const [openFollowingDialog, setOpenFollowingDialog] = useState(false);
+    const [followerList, setFollowerList] = useState([]);
+    const [followingList, setFollowingList] = useState([]);
+    const [postList, setPostList] = useState([]);
+    const [followingStatus, setFollowingStatus] = useState([]);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -27,7 +34,114 @@ const User = () => {
         marginLeft: 'auto',
         width: '660%',
     };
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data = await response.json();
+                setUserData(data[0]);
+                if(data[0].profile_picture){
+                    const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+                    const imageUrl = `${storageUrl}${encodeURIComponent(data[0].profile_picture)}?alt=media`;
+                    setImageSrc(imageUrl);}
 
+                const fetchFollowersCount = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/followers`);
+                        if (response.ok) {
+                            const followers = await response.json();
+                            setFollowersCount(followers.length);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching followers count:', error);
+                    }
+                };
+                const fetchFollowingCount = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
+                        if (response.ok) {
+                            const following = await response.json();
+                            console.log(following)
+                            setFollowingCount(following.length);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching following count:', error);
+                    }
+                };
+
+                const fetchFollowingStatus = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
+                        if (response.ok) {
+                            const following = await response.json();
+                            const statusMap = {};
+                            following.forEach((user) => {
+                                statusMap[user.user_id] = true;
+                            });
+                            setFollowingStatus(statusMap);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching following status:', error);
+                    }
+                };
+                const fetchPosts = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/posts`);
+                        if (response.ok) {
+                            const following = await response.json();
+                            console.log(following)
+                            setPostList(following);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching following status:', error);
+                    }
+                };
+
+                fetchFollowersCount();
+                fetchFollowingCount();
+                fetchFollowingStatus();
+                fetchPosts();
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, [username]);
+    const handleFollow = async (followerId) => {
+
+        const requestBody = {
+            user_id:followerId
+        };
+        try {
+
+            const response = await fetch(`http://localhost:3000/post/${username}/follow`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update follow status');
+            }
+            const isFollowing = followingStatus[followerId];
+
+            setFollowingCount((prevCount) => (!isFollowing ? prevCount + 1 : prevCount - 1));
+
+            setFollowingStatus((prevStatus) => {
+                const newStatus = { ...prevStatus };
+                newStatus[followerId] = !isFollowing;
+                return newStatus;
+            });
+        } catch (error) {
+            console.error('Error updating follow status:', error);
+        }
+    };
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -64,54 +178,44 @@ const User = () => {
         }
     }, [searchInput]);
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user data');
+    const breakpointColumnsObj = {
+        default: 6, // Number of columns by default
+        1100: 5, // Number of columns on screens between 1100px and 700px
+        700: 4, // Number of columns on screens between 700px and 500px
+        500: 3, // Number of columns on screens below 500px
+    };
+
+
+    const handleFollowersClick = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/followers`);
+            if (response.ok) {
+                const followers = await response.json();
+                console.log(followers)
+                if (followers.length > 0) {
+                    setFollowerList(followers);
+                    setOpenFollowersDialog(true);
                 }
-                const data = await response.json();
-                setUserData(data[0]);
-
-                if (userData && userData.profile_picture) {
-                    const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
-                    const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
-                    setImageSrc(imageUrl);
-                }
-                const fetchFollowersCount = async () => {
-                    try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/followers`);
-                        if (response.ok) {
-                            const followers = await response.json();
-                            setFollowersCount(followers.length);
-                        }
-                    } catch (error) {
-                        console.error('Error fetching followers count:', error);
-                    }
-                };
-
-                const fetchFollowingCount = async () => {
-                    try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
-                        if (response.ok) {
-                            const following = await response.json();
-                            setFollowingCount(following.length);
-                        }
-                    } catch (error) {
-                        console.error('Error fetching following count:', error);
-                    }
-                };
-
-                fetchFollowersCount();
-                fetchFollowingCount();
-            } catch (error) {
-                console.error('Error fetching user data:', error);
             }
-        };
+        } catch (error) {
+            console.error('Error fetching followers:', error);
+        }
+    };
 
-        fetchUserData();
-    }, [username]);
+    const handleFollowingClick = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/following`);
+            if (response.ok) {
+                const following = await response.json();
+                if (following.length > 0) {
+                    setFollowingList(following);
+                    setOpenFollowingDialog(true);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching following:', error);
+        }
+    };
 
 
     return (
@@ -184,35 +288,31 @@ const User = () => {
                     alignItems: 'center',
                     minHeight: '100vh'
                 }}>
-                    <IconButton
-                        edge="end"
-                        aria-label="account of current user"
-                        aria-controls="primary-search-account-menu"
-                        aria-haspopup="true"
-                        color="inherit"
-                    >
+                    <div>
                         {imageSrc ? (
                             <Link to={`/${username}/user`}>
                                 <img
                                     src={imageSrc}
                                     alt="Profile Image"
-                                    style={{ width: '140px', height: '140px', borderRadius: '50%' }}
+                                    style={{width: '140px', height: '140px', borderRadius: '50%'}}
                                 />
                             </Link>
                         ) : (
                             <Link to={`/${username}/user`}>
-                                <IconButton
-                                    edge="end"
-                                    aria-label="account of current user"
-                                    aria-controls="primary-search-account-menu"
-                                    aria-haspopup="true"
-                                    sx={{ color: '#fff' }}
-                                >
-                                    <AccountCircle style={{fontSize: '140px'}}/>
-                                </IconButton>
+                                <div style={{color: '#fff'}}>
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="account of current user"
+                                        aria-controls="primary-search-account-menu"
+                                        aria-haspopup="true"
+                                        sx={{color: '#fff'}}
+                                    >
+                                        <AccountCircle style={{fontSize: '140px'}}/>
+                                    </IconButton>
+                                </div>
                             </Link>
                         )}
-                    </IconButton>
+                    </div>
                     {userData && (
                         <div style={{marginTop: '10px'}}>
                             <Typography variant="h4" style={{
@@ -240,10 +340,20 @@ const User = () => {
                                 justifyContent: 'center',
                                 alignItems: 'center'
                             }}>
-                                <Typography style={{marginRight: '10px', color: '#75868e'}}>
+                                <Typography
+                                    onClick={handleFollowersClick}
+                                    style={{
+                                        marginRight: '10px',
+                                        color: '#75868e',
+                                        cursor: 'pointer'
+                                    }}
+                                >
                                     {followersCount} Followers
                                 </Typography>
-                                <Typography style={{color: '#75868e'}}>
+                                <Typography
+                                    onClick={handleFollowingClick}
+                                    style={{color: '#75868e', cursor: 'pointer'}}
+                                >
                                     {followingCount} Following
                                 </Typography>
                             </div>
@@ -261,39 +371,163 @@ const User = () => {
                             },
                         }}>Edit profile</Button>
                     </Link>
-                    <Stack direction="row" style={{ marginTop: '40px' }}>
-                        <Link to={`/${username}/_created`}>
-                            <Button sx={{
+                    <Stack direction="row" style={{marginTop: '40px'}}>
+                        <Button sx={{
+                            color: '#fff',
+                            borderBottom: '2px solid #fff',
+                            borderRadius: '0',
 
-                                color: '#fff',
-                                borderRadius: '20px',
-                            }}>
-                                Created
+                        }}>
+                            Created
+                        </Button>
+                        <Link to={`/${username}/user`}>
+                            <Button
+                                sx={{
+                                    borderRadius: '20px',
+                                    position: 'relative',
+                                    '&:disabled': {
+                                        color: '#fff',
+                                    }
+                                }}
+                                disabled
+                            >
+                                Saved
                             </Button>
                         </Link>
-                        <Button
-                            sx={{
-                                borderRadius: '20px',
-                                position: 'relative',
-                                '&:disabled': {
-                                    color: '#fff',
-                                },
-                                '&:disabled::after': {
-                                    content: '""',
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    bottom: '5px',
-                                    borderBottom: '1.5px solid #fff',
-                                },
-                            }}
-                            disabled
-                        >
-                            Saved
-                        </Button>
                     </Stack>
-                </Box>
 
+                </Box>
+                <div className="mainContainer2" style={{marginTop: '-290px'}}>
+                    {postList && postList.length > 0 ? (
+                        <Masonry
+                            breakpointCols={breakpointColumnsObj}
+                            className="my-masonry-grid"
+                            columnClassName="my-masonry-grid_column"
+                        >
+                            {postList.map((pin) => (
+                                <div key={pin.post_id}>
+                                    <Link to={`/${username}/postEdit/${pin.post_id}`} style={{textDecoration: 'none'}}>
+                                        <Pin post={pin}/>
+                                    </Link>
+                                </div>
+                            ))}
+                        </Masonry>
+                    ) : (
+                        <div style={{textAlign: 'center', marginTop: '20px'}}>
+                            <Typography style={{color: '#75868e'}}>Nothing to show...yet! Pins you create will live here.</Typography>
+                            <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    marginTop: '10px',
+                                    backgroundColor: '#8e3b13',
+                                    color: '#c6815a',
+                                    borderRadius: '20px',
+                                    "&:hover": {
+                                        backgroundColor: "#c6815a",
+                                        color: '#8e3b13',
+                                    },
+                                }}
+                            >
+                                Create Pin
+                            </Button>
+                            </Link>
+                        </div>
+                    )}
+                </div>
+                {followerList &&
+                    <Dialog open={openFollowersDialog} onClose={() => setOpenFollowersDialog(false)} fullWidth
+                            maxWidth="sm">
+                        <DialogTitle
+                            style={{borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center'}}>
+                            {followersCount} Followers
+                        </DialogTitle>
+                        <DialogContent>
+                            <List>
+                                {followerList.map((user) => (
+                                    <ListItem key={user.user_id}
+                                              style={{borderBottom: '1px solid #eee', padding: '10px 0'}}>
+                                        <div style={{display: 'flex', alignItems: 'center'}}>
+                                            {user.profile_picture ? (
+                                                <img
+                                                    src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(user.profile_picture)}?alt=media`}
+                                                    alt={`${user.username}'s Profile`}
+                                                    style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        borderRadius: '50%',
+                                                        marginRight: '20px',
+                                                    }}
+                                                />
+                                            ) : (
+                                                <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
+                                            )}
+                                            <Typography variant="h5"
+                                                        style={{fontWeight: 'bold'}}>{user.username}</Typography>
+                                        </div>
+                                        <Button
+                                            variant="contained"
+                                            style={{
+                                                borderRadius: '30px',
+                                                backgroundColor: followingStatus[user.user_id] ? '#c6815a' : '#8e3b13',
+                                                color: '#fff',
+                                                textTransform: 'capitalize',
+                                            }}
+                                            onClick={() => handleFollow(user.user_id)}
+                                        >
+                                            {followingStatus[user.user_id] ? 'Following' : 'Follow'}
+                                        </Button>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </DialogContent>
+                    </Dialog>
+
+                }
+                <Dialog open={openFollowingDialog} onClose={() => setOpenFollowingDialog(false)} fullWidth
+                        maxWidth="sm">
+                    <DialogTitle style={{borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center'}}>
+                        {followingCount} Following</DialogTitle>
+                    <DialogContent>
+                        <List>
+                            {followingList.map((user) => (
+                                <ListItem key={user.user_id}
+                                          style={{borderBottom: '1px solid #eee', padding: '10px 0'}}>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                        {user.profile_picture ? (
+                                            <img
+                                                src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(user.profile_picture)}?alt=media`}
+                                                alt={`${user.username}'s Profile`}
+                                                style={{
+                                                    width: '50px',
+                                                    height: '50px',
+                                                    borderRadius: '50%',
+                                                    marginRight: '20px',
+                                                }}
+                                            />
+                                        ) : (
+                                            <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
+                                        )}
+                                        <Typography variant="h5"
+                                                    style={{fontWeight: 'bold'}}>{user.username}</Typography>
+                                    </div>
+                                    <Button
+                                        variant="contained"
+                                        style={{
+                                            borderRadius: '30px',
+                                            backgroundColor: followingStatus[user.user_id] ? '#c6815a' : '#8e3b13',
+                                            color: '#fff',
+                                            textTransform: 'capitalize',
+                                        }}
+                                        onClick={() => handleFollow(user.user_id)}
+                                    >
+                                        {followingStatus[user.user_id] ? 'Following' : 'Follow'}
+                                    </Button>
+                                </ListItem>
+                            ))}
+                        </List>
+                    </DialogContent>
+                </Dialog>
                 {searchResults.length > 0 && (
                     <Paper
                         elevation={3}
@@ -327,4 +561,4 @@ const User = () => {
         </div>
     );
 };
-export default User;
+export default UserPosts;

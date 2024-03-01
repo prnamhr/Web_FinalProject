@@ -10,6 +10,7 @@ import User from './pages/User/User.jsx'
 import EditProfil from './pages/EditProfile/EditProfile.jsx'
 import AccountManagement from './pages/AccountManagement/AccountManagement.jsx'
 import UserPosts from './pages/UserPosts/UserPosts.jsx'
+import PostEdit from './pages/PostEdit/PostEdit.jsx'
 import './index.css'
 import {
   createBrowserRouter,
@@ -56,6 +57,10 @@ const router = createBrowserRouter([
   {
     path:"/:username/_created",
     element: <UserPosts/>
+  },
+  {
+    path:"/:username/postEdit/:postId",
+    element: <PostEdit/>
   }
 ]);
 
