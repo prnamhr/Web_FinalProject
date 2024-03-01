@@ -22,7 +22,7 @@ const User = () => {
     const [openFollowingDialog, setOpenFollowingDialog] = useState(false);
     const [followerList, setFollowerList] = useState([]);
     const [followingList, setFollowingList] = useState([]);
-
+    const [followingStatus, setFollowingStatus] = useState([]);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -32,7 +32,102 @@ const User = () => {
         marginLeft: 'auto',
         width: '660%',
     };
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data = await response.json();
+                setUserData(data[0]);
+                if(data[0].profile_picture){
+                    const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+                    const imageUrl = `${storageUrl}${encodeURIComponent(data[0].profile_picture)}?alt=media`;
+                    setImageSrc(imageUrl);}
 
+                const fetchFollowersCount = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/followers`);
+                        if (response.ok) {
+                            const followers = await response.json();
+                            setFollowersCount(followers.length);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching followers count:', error);
+                    }
+                };
+                const fetchFollowingCount = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
+                        if (response.ok) {
+                            const following = await response.json();
+                            console.log(following)
+                            setFollowingCount(following.length);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching following count:', error);
+                    }
+                };
+
+                const fetchFollowingStatus = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
+                        if (response.ok) {
+                            const following = await response.json();
+                            const statusMap = {};
+                            following.forEach((user) => {
+                                statusMap[user.user_id] = true;
+                            });
+                            setFollowingStatus(statusMap);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching following status:', error);
+                    }
+                };
+
+
+                fetchFollowersCount();
+                fetchFollowingCount();
+                fetchFollowingStatus();
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+
+        fetchUserData();
+    }, [username]);
+    const handleFollow = async (followerId) => {
+
+        const requestBody = {
+            user_id:followerId
+        };
+        try {
+
+            const response = await fetch(`http://localhost:3000/post/${username}/follow`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update follow status');
+            }
+            const isFollowing = followingStatus[followerId];
+
+            setFollowingCount((prevCount) => (!isFollowing ? prevCount + 1 : prevCount - 1));
+
+            setFollowingStatus((prevStatus) => {
+                const newStatus = { ...prevStatus };
+                newStatus[followerId] = !isFollowing;
+                return newStatus;
+            });
+        } catch (error) {
+            console.error('Error updating follow status:', error);
+        }
+    };
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -69,59 +164,15 @@ const User = () => {
         }
     }, [searchInput]);
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch user data');
-                }
-                const data = await response.json();
-                setUserData(data[0]);
-                if(data[0].profile_picture){
-                    const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
-                    const imageUrl = `${storageUrl}${encodeURIComponent(data[0].profile_picture)}?alt=media`;
-                    setImageSrc(imageUrl);}
 
-                const fetchFollowersCount = async () => {
-                    try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/followers`);
-                        if (response.ok) {
-                            const followers = await response.json();
-                            setFollowersCount(followers.length);
-                        }
-                    } catch (error) {
-                        console.error('Error fetching followers count:', error);
-                    }
-                };
 
-                const fetchFollowingCount = async () => {
-                    try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
-                        if (response.ok) {
-                            const following = await response.json();
-                            setFollowingCount(following.length);
-                        }
-                    } catch (error) {
-                        console.error('Error fetching following count:', error);
-                    }
-                };
-
-                fetchFollowersCount();
-                fetchFollowingCount();
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-            }
-        };
-
-        fetchUserData();
-    }, [username]);
 
     const handleFollowersClick = async () => {
         try {
             const response = await fetch(`http://localhost:3000/user/${userData.user_id}/followers`);
             if (response.ok) {
                 const followers = await response.json();
+                console.log(followers)
                 if (followers.length > 0) {
                     setFollowerList(followers);
                     setOpenFollowersDialog(true);
@@ -333,25 +384,87 @@ const User = () => {
                         </Button>
                     </Stack>
                 </Box>
-                <Dialog open={openFollowersDialog} onClose={() => setOpenFollowersDialog(false)}>
-                    <DialogTitle>{`List of Followers`}</DialogTitle>
-                    <DialogContent>
-                        <List>
-                            {followerList.map((user) => (
-                                <ListItem key={user.id}>
-                                    <ListItemText primary={user.username} />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </DialogContent>
-                </Dialog>
-                <Dialog open={openFollowingDialog} onClose={() => setOpenFollowingDialog(false)}>
-                    <DialogTitle>{`List of Following`}</DialogTitle>
+                {followerList&&
+                    <Dialog open={openFollowersDialog} onClose={() => setOpenFollowersDialog(false)} fullWidth maxWidth="sm">
+                        <DialogTitle style={{ borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center' }}>
+                            {followersCount} Followers
+                        </DialogTitle>
+                        <DialogContent>
+                            <List>
+                                {followerList.map((user) => (
+                                    <ListItem key={user.user_id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            {user.profile_picture ? (
+                                                <img
+                                                    src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(user.profile_picture)}?alt=media`}
+                                                    alt={`${user.username}'s Profile`}
+                                                    style={{
+                                                        width: '50px',
+                                                        height: '50px',
+                                                        borderRadius: '50%',
+                                                        marginRight: '20px',
+                                                    }}
+                                                />
+                                            ) : (
+                                                <PersonIcon sx={{ fontSize: 50, color: '#c6815a', marginRight: '20px' }} />
+                                            )}
+                                            <Typography variant="h5" style={{ fontWeight: 'bold' }}>{user.username}</Typography>
+                                        </div>
+                                        <Button
+                                            variant="contained"
+                                            style={{
+                                                borderRadius: '30px',
+                                                backgroundColor: followingStatus[user.user_id] ? '#c6815a' : '#8e3b13',
+                                                color: '#fff',
+                                                textTransform: 'capitalize',
+                                            }}
+                                            onClick={() => handleFollow(user.user_id)}
+                                        >
+                                            {followingStatus[user.user_id] ? 'Following' : 'Follow'}
+                                        </Button>
+                                    </ListItem>
+                                ))}
+                            </List>
+                        </DialogContent>
+                    </Dialog>
+
+                }
+                <Dialog open={openFollowingDialog} onClose={() => setOpenFollowingDialog(false)} fullWidth maxWidth="sm">
+                    <DialogTitle style={{ borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center' }}>
+                        {followingCount} Following</DialogTitle>
                     <DialogContent>
                         <List>
                             {followingList.map((user) => (
-                                <ListItem key={user.id}>
-                                    <ListItemText primary={user.username} />
+                                <ListItem key={user.user_id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                        {user.profile_picture ? (
+                                            <img
+                                                src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(user.profile_picture)}?alt=media`}
+                                                alt={`${user.username}'s Profile`}
+                                                style={{
+                                                    width: '50px',
+                                                    height: '50px',
+                                                    borderRadius: '50%',
+                                                    marginRight: '20px',
+                                                }}
+                                            />
+                                        ) : (
+                                            <PersonIcon sx={{ fontSize: 50, color: '#c6815a', marginRight: '20px' }} />
+                                        )}
+                                        <Typography variant="h5" style={{ fontWeight: 'bold' }}>{user.username}</Typography>
+                                    </div>
+                                    <Button
+                                        variant="contained"
+                                        style={{
+                                            borderRadius: '30px',
+                                            backgroundColor: followingStatus[user.user_id] ? '#c6815a' : '#8e3b13',
+                                            color: '#fff',
+                                            textTransform: 'capitalize',
+                                        }}
+                                        onClick={() => handleFollow(user.user_id)}
+                                    >
+                                        {followingStatus[user.user_id] ? 'Following' : 'Follow'}
+                                    </Button>
                                 </ListItem>
                             ))}
                         </List>

@@ -93,6 +93,10 @@ const Post = () => {
         if(!postData.user_id){
             return;
         }
+        if(postData.user_id===userData.user_id)
+        {
+            return;
+        }
         const requestBody = {
             user_id:postData.user_id
         };
