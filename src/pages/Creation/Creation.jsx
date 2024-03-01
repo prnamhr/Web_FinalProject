@@ -66,7 +66,6 @@ const Creation = () => {
                 console.error('Error fetching user data:', error);
             }
         };
-        console.log(userData)
         if (userData && userData.profile_picture) {
             const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
             const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
@@ -99,7 +98,6 @@ const Creation = () => {
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
-        console.log(selectedFile)
         const reader = new FileReader();
         reader.onloadend = () => {
             setImagePreview(reader.result);
@@ -112,7 +110,6 @@ const Creation = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         const userId = await fetchUserId();
-        console.log(file)
         try {
             const formData = new FormData();
             formData.append('user_id', userId);
@@ -131,8 +128,6 @@ const Creation = () => {
             }
 
             const data = await response.json();
-            console.log('New post created:', data);
-
             setSuccessMessage('Post created successfully!');
             setOpenAlert(true);
             setTitle('');

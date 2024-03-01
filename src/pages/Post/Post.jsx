@@ -36,6 +36,7 @@ const Post = () => {
     const [userImageSrc, setUserImageSrc2] = useState('');
     const [userData, setUserData] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -89,6 +90,35 @@ const Post = () => {
             console.error('Error fetching users:', error);
         }
     };
+    const handleSave = async () => {
+        if(!userData.user_id){
+            return;
+        }
+        const requestBody = {
+            user_id:userData.user_id
+        };
+        try {
+
+            const response = await fetch(`http://localhost:3000/post/${postId}/savePost`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update follow status');
+            }
+
+            const save = await response.json();
+
+
+            setIsSaved(save.isFollowing);
+        } catch (error) {
+            console.error('Error updating follow status:', error);
+        }
+    };
     const handleFollow = async () => {
         if(!postData.user_id){
             return;
@@ -100,7 +130,6 @@ const Post = () => {
         const requestBody = {
             user_id:postData.user_id
         };
-        console.log(postData.user_id)
         try {
 
             const response = await fetch(`http://localhost:3000/post/${username}/follow`, {
@@ -142,7 +171,7 @@ const Post = () => {
                 const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
                 const imageUrl = `${storageUrl}${encodeURIComponent(data.photo_content)}?alt=media`;
                 setImageSrc(imageUrl);
-                console.log(data)
+
                 if (data.profile_picture) {
                     const storageUrl2 = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
                     const imageUrl2 = `${storageUrl2}${encodeURIComponent(data.profile_picture)}?alt=media`;
@@ -155,6 +184,23 @@ const Post = () => {
 
                 const followData = await followResponse.json();
                 setIsFollowing(followData.isFollowing);
+
+                const response4 = await fetch(`http://localhost:3000/${username}/finduser`);
+                if (!response4.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data3 = await response4.json();
+                setUserData(data3[0])
+
+                const saveResponse = await fetch(`http://localhost:3000/post/${data3[0].user_id}/${postId}/isSaved`);
+                if (!saveResponse.ok) {
+                    throw new Error('Failed to fetch follow status');
+                }
+
+                const saveData = await saveResponse.json();
+                console.log(saveData)
+                setIsSaved(saveData.isSaved);
+
                 const commentsResponse = await fetch(`http://localhost:3000/post/${postId}/comments`);
                 if (!commentsResponse.ok) {
                     throw new Error('Failed to fetch comments');
@@ -349,14 +395,15 @@ const Post = () => {
                 <Button
                     variant="contained"
                     style={{
-                        borderRadius: '120px',
-                        backgroundColor: '#8e3b13',
                         position: 'absolute',
                         top: '20px',
                         right: '20px',
+                        borderRadius: '120px',
+                        backgroundColor: isSaved ? '#c6815a' : '#8e3b13',
                     }}
+                    onClick={handleSave}
                 >
-                    Save
+                    {isSaved ? 'saved' : 'save'}
                 </Button>
                 <div style={{flex: '1', marginTop: '80px'}}>
                     <CardContent>

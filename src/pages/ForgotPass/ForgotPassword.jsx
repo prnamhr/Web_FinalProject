@@ -26,7 +26,6 @@ export default function ForgotPassword() {
       setMessage('Please enter a valid email, name, or username.');
       return;
     }
-    console.log(formData.email);
     try {
       const response = await fetch(`http://localhost:3000/forgotpassword`, {
         method: 'POST',

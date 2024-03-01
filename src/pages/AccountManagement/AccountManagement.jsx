@@ -69,7 +69,6 @@ const AccountManagement = () => {
                 console.error('Error fetching user data:', error);
             }
         };
-        console.log(userData)
         if (userData && userData.profile_picture) {
             const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
             const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;

@@ -14,7 +14,6 @@ import {
     Avatar
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Pin from './Pin';
 import './index.css';
@@ -58,14 +57,12 @@ const Home = () => {
                 throw new Error('Failed to fetch users');
             }
             const data = await response.json();
-            console.log(data)
             setSearchResults(data);
         } catch (error) {
             console.error('Error fetching users:', error);
         }
     };
     useEffect(() => {
-        console.log(searchInput);
         if (searchInput) {
             searchUsers();
         } else {
@@ -86,7 +83,6 @@ const Home = () => {
                 console.error('Error fetching user data:', error);
             }
         };
-        console.log(userData)
         if (userData && userData.profile_picture) {
             const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
             const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;

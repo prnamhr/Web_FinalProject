@@ -92,7 +92,6 @@ const EditProfile = () => {
             }
 
             if (file) {
-                console.log("hi")
                 const formData = new FormData();
                 formData.append('photo', file); // Use the file from the state
 
@@ -132,7 +131,6 @@ const EditProfile = () => {
                 console.error('Error fetching user data:', error);
             }
         };
-        console.log(userData)
         if (userData && userData.profile_picture) {
             const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
             const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
@@ -146,8 +144,6 @@ const EditProfile = () => {
         const selectedFile = e.target.files[0];
         setFile(selectedFile);
         const reader = new FileReader();
-        console.log(selectedFile)
-        console.log(file)
         reader.onloadend = () => {
             setImagePreview(reader.result);
         };

@@ -10,6 +10,8 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import './index.css';
 import PersonIcon from "@mui/icons-material/Person.js";
 import { Dialog, DialogTitle, DialogContent } from '@mui/material';
+import Masonry from "react-masonry-css";
+import Pin from './Pin';
 const User = () => {
     const {username} = useParams();
     const [userData, setUserData] = useState(null);
@@ -23,6 +25,8 @@ const User = () => {
     const [followerList, setFollowerList] = useState([]);
     const [followingList, setFollowingList] = useState([]);
     const [followingStatus, setFollowingStatus] = useState([]);
+    const [postList, setPostList] = useState([]);
+
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -62,7 +66,6 @@ const User = () => {
                         const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
                         if (response.ok) {
                             const following = await response.json();
-                            console.log(following)
                             setFollowingCount(following.length);
                         }
                     } catch (error) {
@@ -85,11 +88,23 @@ const User = () => {
                         console.error('Error fetching following status:', error);
                     }
                 };
-
+                const fetchPosts = async () => {
+                    try {
+                        const response = await fetch(`http://localhost:3000/post/${data[0].user_id}/saveList`);
+                        if (response.ok) {
+                            const saved = await response.json();
+                            console.log(saved)
+                            setPostList(saved);
+                        }
+                    } catch (error) {
+                        console.error('Error fetching following status:', error);
+                    }
+                };
 
                 fetchFollowersCount();
                 fetchFollowingCount();
                 fetchFollowingStatus();
+                fetchPosts();
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
@@ -142,6 +157,12 @@ const User = () => {
         alignItems: 'center',
         justifyContent: 'center',
     };
+    const breakpointColumnsObj = {
+        default: 6, // Number of columns by default
+        1100: 5, // Number of columns on screens between 1100px and 700px
+        700: 4, // Number of columns on screens between 700px and 500px
+        500: 3, // Number of columns on screens below 500px
+    };
 
     const searchUsers = async () => {
         try {
@@ -172,7 +193,6 @@ const User = () => {
             const response = await fetch(`http://localhost:3000/user/${userData.user_id}/followers`);
             if (response.ok) {
                 const followers = await response.json();
-                console.log(followers)
                 if (followers.length > 0) {
                     setFollowerList(followers);
                     setOpenFollowersDialog(true);
@@ -384,16 +404,41 @@ const User = () => {
                         </Button>
                     </Stack>
                 </Box>
-                {followerList&&
-                    <Dialog open={openFollowersDialog} onClose={() => setOpenFollowersDialog(false)} fullWidth maxWidth="sm">
-                        <DialogTitle style={{ borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center' }}>
+                <div className="mainContainer2" style={{marginTop: '-290px'}}>
+                    {postList && postList.length > 0 ? (
+                        <Masonry
+                            breakpointCols={breakpointColumnsObj}
+                            className="my-masonry-grid"
+                            columnClassName="my-masonry-grid_column"
+                        >
+                            {postList.map((pin) => (
+                                <div key={pin.post_id}>
+                                    <Link to={`/${username}/post/${pin.post_id}`} style={{textDecoration: 'none'}}>
+                                        <Pin post={pin}/>
+                                    </Link>
+                                </div>
+                            ))}
+                        </Masonry>
+                    ) : (
+                        <div style={{textAlign: 'center', marginTop: '20px'}}>
+                            <Typography style={{color: '#75868e'}}>Nothing to show...yet! Pins you saved will live
+                                here.</Typography>
+                        </div>
+                    )}
+                </div>
+                {followerList &&
+                    <Dialog open={openFollowersDialog} onClose={() => setOpenFollowersDialog(false)} fullWidth
+                            maxWidth="sm">
+                        <DialogTitle
+                            style={{borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center'}}>
                             {followersCount} Followers
                         </DialogTitle>
                         <DialogContent>
                             <List>
                                 {followerList.map((user) => (
-                                    <ListItem key={user.user_id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    <ListItem key={user.user_id}
+                                              style={{borderBottom: '1px solid #eee', padding: '10px 0'}}>
+                                        <div style={{display: 'flex', alignItems: 'center'}}>
                                             {user.profile_picture ? (
                                                 <img
                                                     src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(user.profile_picture)}?alt=media`}
@@ -406,9 +451,10 @@ const User = () => {
                                                     }}
                                                 />
                                             ) : (
-                                                <PersonIcon sx={{ fontSize: 50, color: '#c6815a', marginRight: '20px' }} />
+                                                <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
                                             )}
-                                            <Typography variant="h5" style={{ fontWeight: 'bold' }}>{user.username}</Typography>
+                                            <Typography variant="h5"
+                                                        style={{fontWeight: 'bold'}}>{user.username}</Typography>
                                         </div>
                                         <Button
                                             variant="contained"
@@ -429,14 +475,16 @@ const User = () => {
                     </Dialog>
 
                 }
-                <Dialog open={openFollowingDialog} onClose={() => setOpenFollowingDialog(false)} fullWidth maxWidth="sm">
-                    <DialogTitle style={{ borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center' }}>
+                <Dialog open={openFollowingDialog} onClose={() => setOpenFollowingDialog(false)} fullWidth
+                        maxWidth="sm">
+                    <DialogTitle style={{borderBottom: '1px solid #ccc', paddingBottom: '10px', textAlign: 'center'}}>
                         {followingCount} Following</DialogTitle>
                     <DialogContent>
                         <List>
                             {followingList.map((user) => (
-                                <ListItem key={user.user_id} style={{ borderBottom: '1px solid #eee', padding: '10px 0' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <ListItem key={user.user_id}
+                                          style={{borderBottom: '1px solid #eee', padding: '10px 0'}}>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
                                         {user.profile_picture ? (
                                             <img
                                                 src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(user.profile_picture)}?alt=media`}
@@ -449,9 +497,10 @@ const User = () => {
                                                 }}
                                             />
                                         ) : (
-                                            <PersonIcon sx={{ fontSize: 50, color: '#c6815a', marginRight: '20px' }} />
+                                            <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
                                         )}
-                                        <Typography variant="h5" style={{ fontWeight: 'bold' }}>{user.username}</Typography>
+                                        <Typography variant="h5"
+                                                    style={{fontWeight: 'bold'}}>{user.username}</Typography>
                                     </div>
                                     <Button
                                         variant="contained"
