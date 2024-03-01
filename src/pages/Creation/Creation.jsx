@@ -9,7 +9,7 @@ import {
     InputLabel,
     FormControl,
     Paper,
-    Typography, Alert, List, ListItem, ListItemText,
+    Typography, Alert, List, ListItem, ListItemText, Avatar,
 } from '@mui/material';
 import {
     AppBar,
@@ -22,7 +22,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import {useState,useEffect} from 'react';
+import {useState, useEffect} from 'react';
 import PersonIcon from "@mui/icons-material/Person.js";
 
 const Creation = () => {
@@ -37,6 +37,8 @@ const Creation = () => {
     const [openAlert, setOpenAlert] = useState(false);
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [imageSrc, setImageSrc] = useState('');
+    const [userData, setUserData] = useState(null);
     const fetchUserId = async () => {
         try {
             const response = await fetch(`http://localhost:3000/postCreation/getUserId?username=${username}`);
@@ -51,6 +53,28 @@ const Creation = () => {
             console.error('Error fetching user ID:', error.message);
         }
     };
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data = await response.json();
+                setUserData(data[0]);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        console.log(userData)
+        if (userData && userData.profile_picture) {
+            const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+            const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
+            setImageSrc(imageUrl);
+        }
+
+        fetchUserData();
+    }, [username, userData, setImageSrc, setUserData]);
     const searchUsers = async () => {
         try {
             const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
@@ -162,13 +186,15 @@ const Creation = () => {
                         <Grid container margin='10px'>
                             <Grid item style={{marginRight: '3px'}}>
                                 <Link to={`/${username}`} style={{textDecoration: 'none'}}>
-                                    <Button sx={{ color: '#fff'}}>Home</Button>
+                                    <Button sx={{color: '#fff'}}>Home</Button>
                                 </Link>
                             </Grid>
                             <Grid item style={{marginRight: '10px'}}>
-                                <Button sx={{ backgroundColor: '#8e3b13',
+                                <Button sx={{
+                                    backgroundColor: '#8e3b13',
                                     color: '#c6815a',
-                                    borderRadius: '20px'}}>Create</Button>
+                                    borderRadius: '20px'
+                                }}>Create</Button>
                             </Grid>
                         </Grid>
 
@@ -178,21 +204,38 @@ const Creation = () => {
                             </div>
                             <InputBase
                                 placeholder="Search"
-                                inputProps={{ 'aria-label': 'search' }}
-                                style={{ paddingLeft: '60px', width: '100%' }}
+                                inputProps={{'aria-label': 'search'}}
+                                style={{paddingLeft: '60px', width: '100%'}}
                                 value={searchInput}
                                 onChange={(e) => setSearchInput(e.target.value)}
                             />
                         </div>
 
-                        <Link to={`/${username}/user`} style={{ textDecoration: 'none' }}>
-                            <IconButton
-                                sx={{color:"#fff"}}
-                            >
-                                <AccountCircle style={{ fontSize: '40px' }} />
-                            </IconButton>
-                        </Link>
-
+                        {imageSrc ? (
+                            <Link to={`/${username}/user`}>
+                                <img
+                                    src={imageSrc}
+                                    alt="Profile Image"
+                                    style={{width: '40px', height: '40px', borderRadius: '50%'}}
+                                />
+                            </Link>
+                        ) : (
+                            <Link to={`/${username}/user`}>
+                                <IconButton
+                                    edge="end"
+                                    aria-label="account of current user"
+                                    aria-controls="primary-search-account-menu"
+                                    aria-haspopup="true"
+                                    sx={{color: '#fff'}}
+                                >
+                                    <Avatar
+                                        alt="Default Profile Picture"
+                                        src={'/path/to/default/avatar.jpg'}
+                                        sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
+                                    />
+                                </IconButton>
+                            </Link>
+                        )}
                         <IconButton aria-label='display more actions' edge='end' color='inherit'>
                             <MoreVertIcon/>
                         </IconButton>
@@ -220,23 +263,24 @@ const Creation = () => {
                                         id='upload-file'
                                         name='photo'
                                         onChange={handleFileChange}
-                                        inputProps={{ style: { display: 'none' } }}
+                                        inputProps={{style: {display: 'none'}}}
                                     />
                                     {imagePreview ? (
                                         <img
                                             src={imagePreview}
                                             alt='Image Preview'
-                                            style={{ width: '100%', maxHeight: '200px', objectFit: 'cover' }}
+                                            style={{width: '100%', maxHeight: '200px', objectFit: 'cover'}}
                                         />
                                     ) : (
                                         <>
-                                            <CloudUploadIcon sx={{ fontSize: 50 }} />
+                                            <CloudUploadIcon sx={{fontSize: 50}}/>
                                             <Button
                                                 sx={{
                                                     backgroundColor: '#8e3b13',
                                                     color: '#fff',
                                                     '&:hover': {
-                                                        backgroundColor: '#c6815a'}
+                                                        backgroundColor: '#c6815a'
+                                                    }
                                                 }}
                                                 variant='contained'
                                                 component='span'
@@ -246,8 +290,9 @@ const Creation = () => {
                                         </>
                                     )}
                                 </label>
-                                <Typography variant='caption' sx={{ mt: 1 }}>
-                                    We recommend using high-quality jpg files less than 20MB or .mp4 files less than 200MB.
+                                <Typography variant='caption' sx={{mt: 1}}>
+                                    We recommend using high-quality jpg files less than 20MB or .mp4 files less than
+                                    200MB.
                                 </Typography>
                             </Box>
                             <TextField label='Title' variant='outlined' value={title}
@@ -276,7 +321,8 @@ const Creation = () => {
                                     backgroundColor: '#8e3b13',
                                     color: '#fff',
                                     '&:hover': {
-                                        backgroundColor: '#c6815a'}
+                                        backgroundColor: '#c6815a'
+                                    }
                                 }}
                                 onClick={handleSubmit}
                             >
@@ -284,11 +330,11 @@ const Creation = () => {
                             </Button>
 
 
-                            {openAlert&& <Alert
+                            {openAlert && <Alert
                                 severity="success"
                                 open={openAlert}
                                 onClose={handleAlertClose}
-                                sx={{ marginTop: 2 }}
+                                sx={{marginTop: 2}}
                             >
                                 {successMessage}
                             </Alert>}
@@ -319,7 +365,7 @@ const Creation = () => {
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
                                 <PersonIcon sx={{fontSize: 35, color: '#e27d60', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username} />
+                                <ListItemText primary={user.username}/>
                             </ListItem>
                         ))}
                     </List>

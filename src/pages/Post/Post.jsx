@@ -8,11 +8,10 @@ import {
     IconButton,
     InputBase,
     Button,
-    Grid, CardMedia, Paper, List, ListItem, ListItemText
+    Grid, CardMedia, Paper, List, ListItem, ListItemText, Avatar
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {Link, useParams} from 'react-router-dom';
@@ -22,6 +21,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import './index.css'
 
+
 const Post = () => {
     const {postId, username} = useParams();
     const [postData, setPostData] = useState(null);
@@ -29,9 +29,13 @@ const Post = () => {
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [isLiked, setIsLiked] = useState(false);
-    const [likeLen,setLikeLen]=useState(0);
+    const [likeLen, setLikeLen] = useState(0);
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
+    const [imageSrc2, setImageSrc2] = useState('');
+    const [userImageSrc, setUserImageSrc2] = useState('');
+    const [userData, setUserData] = useState(null);
+    const [isFollowing, setIsFollowing] = useState(false);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -52,6 +56,27 @@ const Post = () => {
         alignItems: 'center',
         justifyContent: 'center',
     };
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data = await response.json();
+                setUserData(data[0]);
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+            }
+        };
+        if (userData && userData.profile_picture) {
+            const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+            const imageUrl = `${storageUrl}${encodeURIComponent(userData.profile_picture)}?alt=media`;
+            setImageSrc2(imageUrl);
+        }
+
+        fetchUserData();
+    }, [username, userData, setImageSrc2, setUserData]);
     const searchUsers = async () => {
         try {
             const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
@@ -64,7 +89,36 @@ const Post = () => {
             console.error('Error fetching users:', error);
         }
     };
+    const handleFollow = async () => {
+        if(!postData.user_id){
+            return;
+        }
+        const requestBody = {
+            user_id:postData.user_id
+        };
+        console.log(postData.user_id)
+        try {
 
+            const response = await fetch(`http://localhost:3000/post/${username}/follow`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to update follow status');
+            }
+
+            const followStatus = await response.json();
+
+            // Update the state based on the follow status
+            setIsFollowing(followStatus.isFollowing);
+        } catch (error) {
+            console.error('Error updating follow status:', error);
+        }
+    };
     useEffect(() => {
         if (searchInput) {
             searchUsers();
@@ -84,7 +138,19 @@ const Post = () => {
                 const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
                 const imageUrl = `${storageUrl}${encodeURIComponent(data.photo_content)}?alt=media`;
                 setImageSrc(imageUrl);
+                console.log(data)
+                if (data.profile_picture) {
+                    const storageUrl2 = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+                    const imageUrl2 = `${storageUrl2}${encodeURIComponent(data.profile_picture)}?alt=media`;
+                    setUserImageSrc2(imageUrl2);
+                }
+                const followResponse = await fetch(`http://localhost:3000/post/${username}/isFollowing/${data.username}`);
+                if (!followResponse.ok) {
+                    throw new Error('Failed to fetch follow status');
+                }
 
+                const followData = await followResponse.json();
+                setIsFollowing(followData.isFollowing);
                 const commentsResponse = await fetch(`http://localhost:3000/post/${postId}/comments`);
                 if (!commentsResponse.ok) {
                     throw new Error('Failed to fetch comments');
@@ -212,20 +278,37 @@ const Post = () => {
                                 </div>
                                 <InputBase
                                     placeholder="Search"
-                                    inputProps={{ 'aria-label': 'search' }}
-                                    style={{ paddingLeft: '60px', width: '100%' }}
+                                    inputProps={{'aria-label': 'search'}}
+                                    style={{paddingLeft: '60px', width: '100%'}}
                                     value={searchInput}
                                     onChange={(e) => setSearchInput(e.target.value)}
                                 />
                             </div>
-                            <Link to={`/${username}/user`} style={{ textDecoration: 'none' }}>
-                                <IconButton
-                                    sx={{color:"#fff"}}
-                                >
-                                    <AccountCircle style={{ fontSize: '40px' }} />
-                                </IconButton>
-                            </Link>
-
+                            {imageSrc2 ? (
+                                <Link to={`/${username}/user`}>
+                                    <img
+                                        src={imageSrc2}
+                                        alt="Profile Image"
+                                        style={{width: '40px', height: '40px', borderRadius: '50%'}}
+                                    />
+                                </Link>
+                            ) : (
+                                <Link to={`/${username}/user`}>
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="account of current user"
+                                        aria-controls="primary-search-account-menu"
+                                        aria-haspopup="true"
+                                        sx={{color: '#fff'}}
+                                    >
+                                        <Avatar
+                                            alt="Default Profile Picture"
+                                            src={'/path/to/default/avatar.jpg'}
+                                            sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
+                                        />
+                                    </IconButton>
+                                </Link>
+                            )}
                             <IconButton aria-label="display more actions" edge="end" color="inherit">
                                 <MoreVertIcon/>
                             </IconButton>
@@ -293,7 +376,20 @@ const Post = () => {
                                 alignItems: 'center',
                                 marginLeft: '-60px'
                             }}>
-                                <PersonIcon sx={{fontSize: 40, color: '#8e3b13', marginRight: '5px'}}/>
+                                {userImageSrc ? (
+                                    <img
+                                        src={userImageSrc}
+                                        alt="User Profile"
+                                        style={{
+                                            width: '40px',
+                                            height: '40px',
+                                            borderRadius: '50%',
+                                            marginRight: '10px'
+                                        }}
+                                    />
+                                ) : (
+                                    <PersonIcon sx={{fontSize: 40, color: '#8e3b13'}}/>
+                                )}
                                 {postData && postData.username && (
                                     <Typography variant="body1">{postData.username}</Typography>
                                 )}
@@ -302,10 +398,11 @@ const Post = () => {
                                 variant="contained"
                                 style={{
                                     borderRadius: '120px',
-                                    backgroundColor: '#8e3b13',
+                                    backgroundColor: isFollowing ? '#c6815a' : '#8e3b13', // Change color based on follow status
                                 }}
+                                onClick={handleFollow}
                             >
-                                Follow
+                                {isFollowing ? 'following' : 'Follow'} {/* Change button text based on follow status */}
                             </Button>
 
                         </div>
@@ -323,7 +420,15 @@ const Post = () => {
                                 {comments.map((comment) => (
                                     <Box key={comment.comment_id} mb={1} style={{wordWrap: 'break-word'}}>
                                         <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}}>
-                                            <PersonIcon sx={{fontSize: 30, color: '#c6815a', marginRight: '5px'}}/>
+                                            {comment.profile_picture ? (
+                                                <img
+                                                    src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(comment.profile_picture)}?alt=media`}
+                                                    alt={`${comment.username}'s Profile`}
+                                                    style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }}
+                                                />
+                                            ) : (
+                                                <PersonIcon sx={{ fontSize: 30, color: '#c6815a', marginRight: '5px' }} />
+                                            )}
                                             <div style={{display: 'flex', flexDirection: 'column', marginRight: '5px'}}>
                                                 <Typography variant="h7">{comment.username}</Typography>
                                                 <Typography variant="body2">{comment.comment_text}</Typography>
@@ -348,7 +453,7 @@ const Post = () => {
                         <div style={{display: 'flex', justifyContent: 'space-between'}}>
                             <Typography variant="h6"
                                         style={{marginLeft: '10px'}}>{comments.length} comments</Typography>
-                            <div style={{display:'flex',flexDirection:'row'}}>
+                            <div style={{display: 'flex', flexDirection: 'row'}}>
                                 <Typography variant="h6"
                                             style={{marginLeft: '10px'}}>{likeLen}</Typography>
                                 <IconButton onClick={handleLike} style={{color: 'red'}}>
@@ -357,7 +462,18 @@ const Post = () => {
                             </div>
                         </div>
                         <div style={{display: 'flex'}}>
-                            <PersonIcon sx={{fontSize: 40, color: '#8e3b13', marginRight: '5px'}}/>
+                            {imageSrc2 ? (
+                                <Link to={`/${username}/user`}>
+                                    <img
+                                        src={imageSrc2}
+                                        alt="Profile Image"
+                                        style={{width: '40px', height: '40px', borderRadius: '50%'}}
+                                    />
+                                </Link>
+                            ) : (
+                                <PersonIcon sx={{fontSize: 40, color: '#8e3b13', marginRight: '5px'}}/>
+                            )}
+
                             <InputBase
                                 placeholder="Add a comment"
                                 value={newComment}
@@ -401,7 +517,7 @@ const Post = () => {
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
                                 <PersonIcon sx={{fontSize: 35, color: '#e27d60', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username} />
+                                <ListItemText primary={user.username}/>
                             </ListItem>
                         ))}
                     </List>

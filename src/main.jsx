@@ -9,6 +9,7 @@ import Post from './pages/Post/Post.jsx'
 import User from './pages/User/User.jsx'
 import EditProfil from './pages/EditProfile/EditProfile.jsx'
 import AccountManagement from './pages/AccountManagement/AccountManagement.jsx'
+import UserPosts from './pages/UserPosts/UserPosts.jsx'
 import './index.css'
 import {
   createBrowserRouter,
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
   {
     path:"/:username/accountManagement",
     element: <AccountManagement/>
+  },
+  {
+    path:"/:username/_created",
+    element: <UserPosts/>
   }
 ]);
 
