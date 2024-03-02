@@ -70,7 +70,6 @@ const Pin = ({ post }) => {
                 }
 
                 const saveData = await saveResponse.json();
-                console.log(saveData)
                 setIsSaved(saveData.isSaved);
 
             } catch (error) {

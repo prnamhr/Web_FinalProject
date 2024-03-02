@@ -182,7 +182,6 @@ const PostEdit = () => {
                 const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
                 const imageUrl = `${storageUrl}${encodeURIComponent(data.photo_content)}?alt=media`;
                 setImageSrc(imageUrl);
-                console.log(data)
                 if (data.profile_picture) {
                     const storageUrl2 = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
                     const imageUrl2 = `${storageUrl2}${encodeURIComponent(data.profile_picture)}?alt=media`;
@@ -437,10 +436,8 @@ const PostEdit = () => {
                                         aria-haspopup="true"
                                         sx={{color: '#fff'}}
                                     >
-                                        <Avatar
-                                            alt="Default Profile Picture"
-                                            src={'/path/to/default/avatar.jpg'}
-                                            sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
+                                        <AccountCircleIcon
+                                            sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
                                         />
                                     </IconButton>
                                 </Link>

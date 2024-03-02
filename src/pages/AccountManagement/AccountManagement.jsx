@@ -26,7 +26,8 @@ import {Link} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
-const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
+
+const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 const AccountManagement = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -39,7 +40,7 @@ const AccountManagement = () => {
     const [isInvalidEmail, setIsInvalidEmail] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [username,setUsername] =useState();
+    const [username, setUsername] = useState();
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -58,7 +59,7 @@ const AccountManagement = () => {
     };
 
     useEffect(() => {
-        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        const userAuth = JSON.parse(localStorage.getItem("userAuth"))
         setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
@@ -181,7 +182,9 @@ const AccountManagement = () => {
             <div className="toolbar">
                 <AppBar position="static" color="default" elevation={0}>
                     <Toolbar sx={{backgroundColor: '#193a3f', color: '#75868e'}}>
-                        <img  src={`https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/uploads%2FLogo.png?alt=media&token=776b5284-9d23-4a29-8db5-5acbb6607f56`} alt="Logo" style={{width: '45px', height: '45px'}}/>
+                        <img
+                            src={`https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/uploads%2FLogo.png?alt=media&token=776b5284-9d23-4a29-8db5-5acbb6607f56`}
+                            alt="Logo" style={{width: '45px', height: '45px'}}/>
                         <Grid container margin="10px">
                             <Grid item style={{marginRight: '3px'}}>
                                 <Link to={`/inside`} style={{textDecoration: 'none'}}>
@@ -228,9 +231,7 @@ const AccountManagement = () => {
                                     aria-haspopup="true"
                                     sx={{color: '#fff'}}
                                 >
-                                    <Avatar
-                                        alt="Default Profile Picture"
-                                        src={'/path/to/default/avatar.jpg'}
+                                    <AccountCircleIcon
                                         sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
                                     />
                                 </IconButton>
@@ -242,9 +243,9 @@ const AccountManagement = () => {
                             color='inherit'
                             onClick={() => setDropdownOpen(!dropdownOpen)}
                         >
-                            <MoreVertIcon />
+                            <MoreVertIcon/>
                         </IconButton>
-                        <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
+                        <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)}/>
                     </Toolbar>
                 </AppBar>
             </div>

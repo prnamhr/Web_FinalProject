@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {
     AppBar, Toolbar, IconButton, InputBase, Button, Grid, List, ListItem, ListItemText, Paper
     , Box, Typography, Stack
@@ -70,7 +70,6 @@ const UserPosts = () => {
                         const response = await fetch(`${BASE_URL}/user/${data[0].user_id}/following`);
                         if (response.ok) {
                             const following = await response.json();
-                            console.log(following)
                             setFollowingCount(following.length);
                         }
                     } catch (error) {
@@ -98,7 +97,6 @@ const UserPosts = () => {
                         const response = await fetch(`${BASE_URL}/user/${data[0].user_id}/posts`);
                         if (response.ok) {
                             const following = await response.json();
-                            console.log(following)
                             setPostList(following);
                         }
                     } catch (error) {
@@ -198,7 +196,6 @@ const UserPosts = () => {
             const response = await fetch(`${BASE_URL}/user/${userData.user_id}/followers`);
             if (response.ok) {
                 const followers = await response.json();
-                console.log(followers)
                 if (followers.length > 0) {
                     setFollowerList(followers);
                     setOpenFollowersDialog(true);

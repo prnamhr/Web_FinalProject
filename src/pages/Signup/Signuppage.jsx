@@ -66,7 +66,6 @@ export default function Signup() {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formIsValid = validateForm();
-        console.log(formIsValid);
         const isUniqueEmail = await checkUniqueEmail();
 
         if (formIsValid && isUniqueEmail) {
@@ -83,7 +82,7 @@ export default function Signup() {
                         password: formData.password,
                     }),
                 });
-                console.log(response)
+
                 if (!response.ok) {
                     const errorData = await response.json();
                     throw new Error(errorData.message);
@@ -91,7 +90,6 @@ export default function Signup() {
                 const data = await response.json();
                 localStorage.setItem("userAuth",JSON.stringify(data))
                 navigate(`/`);
-                console.log("Signup successful");
             } catch (error) {
                 console.error("Signup error:", error.message);
             }

@@ -41,7 +41,6 @@ const Pin = ({ post }) => {
     };
 
     useEffect(() => {
-        console.log(post)
         // Construct the complete URL for the image based on your Firebase Storage configuration
         const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
         const imageUrl = `${storageUrl}${encodeURIComponent(post.photo_content)}?alt=media`;
@@ -70,7 +69,6 @@ const Pin = ({ post }) => {
                 }
 
                 const saveData = await saveResponse.json();
-                console.log(saveData)
                 setIsSaved(saveData.isSaved);
 
             } catch (error) {

@@ -8,7 +8,7 @@ import {
     IconButton,
     InputBase,
     Button,
-    Grid, CardMedia, Paper, List, ListItem, ListItemText, Avatar
+    Grid, CardMedia, Paper, List, ListItem, ListItemText, AccountCircleIcon
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import SearchIcon from '@mui/icons-material/Search';
@@ -21,7 +21,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
-const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
+const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 const Post = () => {
     const {postId} = useParams();
     const [postData, setPostData] = useState(null);
@@ -38,7 +38,7 @@ const Post = () => {
     const [isFollowing, setIsFollowing] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
     const [dropdownOpen, setDropdownOpen] = useState(false);
-    const [username,setUsername] =useState();
+    const [username, setUsername] = useState();
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -60,7 +60,7 @@ const Post = () => {
         justifyContent: 'center',
     };
     useEffect(() => {
-        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        const userAuth = JSON.parse(localStorage.getItem("userAuth"))
         setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
@@ -163,7 +163,7 @@ const Post = () => {
         }
     }, [searchInput]);
     useEffect(() => {
-        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        const userAuth = JSON.parse(localStorage.getItem("userAuth"))
         setUsername(userAuth.username)
         const fetchPostData = async () => {
             try {
@@ -225,7 +225,7 @@ const Post = () => {
     }, [postId]);
 
     useEffect(() => {
-        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        const userAuth = JSON.parse(localStorage.getItem("userAuth"))
         setUsername(userAuth.username)
         const fetchLikeStatus = async () => {
             try {
@@ -313,7 +313,9 @@ const Post = () => {
                 <div className="toolbar">
                     <AppBar position="static" color="default" elevation={0}>
                         <Toolbar sx={{backgroundColor: '#193a3f', color: '#75868e'}}>
-                            <img  src={`https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/uploads%2FLogo.png?alt=media&token=776b5284-9d23-4a29-8db5-5acbb6607f56`} alt="Logo" style={{width: '45px', height: '45px'}}/>
+                            <img
+                                src={`https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/uploads%2FLogo.png?alt=media&token=776b5284-9d23-4a29-8db5-5acbb6607f56`}
+                                alt="Logo" style={{width: '45px', height: '45px'}}/>
                             <Grid container margin="10px">
                                 <Grid item style={{marginRight: '3px'}}>
                                     <Link to={`/inside`} style={{textDecoration: 'none'}}>
@@ -358,9 +360,7 @@ const Post = () => {
                                         aria-haspopup="true"
                                         sx={{color: '#fff'}}
                                     >
-                                        <Avatar
-                                            alt="Default Profile Picture"
-                                            src={'/path/to/default/avatar.jpg'}
+                                        <AccountCircleIcon
                                             sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
                                         />
                                     </IconButton>
@@ -372,9 +372,9 @@ const Post = () => {
                                 color='inherit'
                                 onClick={() => setDropdownOpen(!dropdownOpen)}
                             >
-                                <MoreVertIcon />
+                                <MoreVertIcon/>
                             </IconButton>
-                            <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
+                            <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)}/>
                         </Toolbar>
                     </AppBar>
                 </div>

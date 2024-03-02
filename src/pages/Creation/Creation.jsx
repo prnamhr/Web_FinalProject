@@ -9,7 +9,7 @@ import {
     InputLabel,
     FormControl,
     Paper,
-    Typography, Alert, List, ListItem, ListItemText, Avatar
+    Typography, Alert, List, ListItem, ListItemText, AccountCircleIcon
 } from '@mui/material';
 import {
     AppBar,
@@ -227,10 +227,8 @@ const Creation = () => {
                                     aria-haspopup="true"
                                     sx={{color: '#fff'}}
                                 >
-                                    <Avatar
-                                        alt="Default Profile Picture"
-                                        src={'/path/to/default/avatar.jpg'}
-                                        sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
+                                    <AccountCircleIcon
+                                        sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
                                     />
                                 </IconButton>
                             </Link>

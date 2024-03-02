@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {
     AppBar, Toolbar, IconButton, InputBase, Button, Grid, List, ListItem, ListItemText, Paper
     , Box, Typography, Stack
@@ -97,7 +97,6 @@ const User = () => {
                         const response = await fetch(`${BASE_URL}/post/${data[0].user_id}/saveList`);
                         if (response.ok) {
                             const saved = await response.json();
-                            console.log(saved)
                             setPostList(saved);
                         }
                     } catch (error) {

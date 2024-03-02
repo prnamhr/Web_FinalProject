@@ -246,10 +246,8 @@ const EditProfile = () => {
                                     aria-haspopup="true"
                                     sx={{color: '#fff'}}
                                 >
-                                    <Avatar
-                                        alt="Default Profile Picture"
-                                        src={'/path/to/default/avatar.jpg'}
-                                        sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
+                                    <AccountCircleIcon
+                                        sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
                                     />
                                 </IconButton>
                             </Link>
