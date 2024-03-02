@@ -11,7 +11,7 @@ import Alert from '@mui/material/Alert';
 import {useState} from 'react'
 const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const defaultTheme = createTheme();
-import './index.css'
+
 
 export default function ForgotPassword() {
     const [message, setMessage] = useState('');

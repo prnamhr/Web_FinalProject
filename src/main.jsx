@@ -13,7 +13,7 @@ import UserPosts from './pages/UserPosts/UserPosts.jsx'
 import PostEdit from './pages/PostEdit/PostEdit.jsx'
 import VisitPage from './pages/VisitPage/VisitPage.jsx'
 import FindUser from './pages/ForgotPass/FindUser.jsx'
-import './index.css'
+
 import {
   createBrowserRouter,
   RouterProvider,

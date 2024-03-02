@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Card, CardMedia, Button } from '@mui/material';
-import {useParams} from "react-router-dom";
+
 
 const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const Pin = ({ post }) => {

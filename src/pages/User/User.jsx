@@ -7,7 +7,6 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import './index.css';
 import PersonIcon from "@mui/icons-material/Person.js";
 import {Dialog, DialogTitle, DialogContent} from '@mui/material';
 import Masonry from "react-masonry-css";

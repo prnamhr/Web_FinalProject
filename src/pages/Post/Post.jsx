@@ -19,7 +19,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import SendIcon from '@mui/icons-material/Send';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import './index.css'
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
 const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
