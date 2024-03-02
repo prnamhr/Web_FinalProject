@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import PersonIcon from "@mui/icons-material/Person.js";
-import {Link, useParams} from "react-router-dom";
+import {Link} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
@@ -52,12 +52,10 @@ const EditProfile = () => {
                 if (response.ok) {
                     const data = await response.json();
                     if (data.length > 0) {
-                        setIsUsernameTaken(true)
-
+                        setIsUsernameTaken(true);
                         return;
                     }
                 } else {
-
                     alert('Error checking username availability. Please try again.');
                     return;
                 }
@@ -83,19 +81,23 @@ const EditProfile = () => {
                 },
                 body: JSON.stringify(requestBody)
             });
+
             if (!response.ok) {
                 throw new Error('Failed to update profile');
             }
+
             const data = await response.json();
-            if (use) {
+            if (use && data !== 0) {
                 localStorage.clear();
                 localStorage.setItem("userAuth",JSON.stringify(data))
                 navigate(`/editProfile`);
             }
 
+
+            console.log(file);
             if (file) {
                 const formData = new FormData();
-                formData.append('photo', file); // Use the file from the state
+                formData.append('photo', file);
 
                 const response2 = await fetch(`http://localhost:3000/user/${userData.user_id}/photo`, {
                     method: 'POST',
@@ -106,10 +108,12 @@ const EditProfile = () => {
                     throw new Error('Failed to upload profile picture');
                 }
             }
+
             setIsUpdateSuccess(true);
             setTimeout(() => {
                 setIsUpdateSuccess(false);
             }, 3000);
+
             setName('');
             setsurname('');
             setBio('');
