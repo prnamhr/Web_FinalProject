@@ -10,8 +10,7 @@ import {
     Paper,
     List,
     ListItem,
-    ListItemText,
-    AccountCircleIcon
+    ListItemText
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -20,6 +19,7 @@ import './index.css';
 import Masonry from 'react-masonry-css';
 import PersonIcon from "@mui/icons-material/Person.js";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const Home = () => {
     const [username,setUsername] =useState();

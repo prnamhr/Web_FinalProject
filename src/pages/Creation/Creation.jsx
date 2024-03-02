@@ -9,7 +9,7 @@ import {
     InputLabel,
     FormControl,
     Paper,
-    Typography, Alert, List, ListItem, ListItemText, AccountCircleIcon
+    Typography, Alert, List, ListItem, ListItemText
 } from '@mui/material';
 import {
     AppBar,
@@ -24,7 +24,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {useState, useEffect} from 'react';
 import PersonIcon from "@mui/icons-material/Person.js";
 import DropdownMenu from './DropdownMenu.jsx'
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const Creation = () => {
     const [title, setTitle] = useState('');

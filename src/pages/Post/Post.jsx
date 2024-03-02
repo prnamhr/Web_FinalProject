@@ -8,7 +8,7 @@ import {
     IconButton,
     InputBase,
     Button,
-    Grid, CardMedia, Paper, List, ListItem, ListItemText, AccountCircleIcon
+    Grid, CardMedia, Paper, List, ListItem, ListItemText
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import SearchIcon from '@mui/icons-material/Search';
@@ -21,6 +21,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const BASE_URL = import.meta.env.VITE_BACKEND_BASE_URL;
 const Post = () => {
     const {postId} = useParams();

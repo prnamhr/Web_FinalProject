@@ -18,7 +18,9 @@ import {Link} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
+
 const EditProfile = () => {
     const [name, setName] = useState('');
     const [surname, setsurname] = useState('');

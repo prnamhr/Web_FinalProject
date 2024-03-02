@@ -14,7 +14,6 @@ import {
     List,
     ListItem,
     ListItemText,
-    Avatar,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -32,7 +31,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {TextField} from '@mui/material';
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
-
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const PostEdit = () => {
     const { postId} = useParams();
