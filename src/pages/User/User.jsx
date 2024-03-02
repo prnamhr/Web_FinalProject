@@ -335,7 +335,7 @@ const User = () => {
                                 alignItems: 'center',
                                 marginTop: '5px'
                             }}>
-                                <img src="/pic/logo.png" alt="Logo"
+                                <img src={`https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/uploads%2FLogo.png?alt=media&token=776b5284-9d23-4a29-8db5-5acbb6607f56`} alt="Logo"
                                      style={{width: '20px', height: '20px', marginRight: '5px'}}/>
                                 <Typography style={{fontWeight: 'bold', textTransform: 'capitalize', color: '#75868e'}}>
                                     {userData.username}

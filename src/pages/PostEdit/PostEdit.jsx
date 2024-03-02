@@ -436,7 +436,7 @@ const PostEdit = () => {
                                         sx={{color: '#fff'}}
                                     >
                                         <AccountCircleIcon
-                                            sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
+                                            sx={{width: 40, height: 40, color: '#fff'}}
                                         />
                                     </IconButton>
                                 </Link>
