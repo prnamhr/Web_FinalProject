@@ -113,10 +113,11 @@ export default function Login() {
                 >
 
                     <img
-                        src="/pic/logo.jpg"
+                        src="../pic/logo.jpg"
                         alt="Pinterest Logo"
                         style={{width: "200px", height: "200px"}}
                     />
+
                     <Typography component="h1" variant="h5" style={{color: '#8e3b13'}}>
                         Welcome to lumière
                     </Typography>
