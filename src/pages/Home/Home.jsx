@@ -1,5 +1,5 @@
 import {useState, useEffect} from 'react';
-import {Link, useParams} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {
     AppBar,
     Toolbar,
@@ -19,16 +19,17 @@ import Pin from './Pin';
 import './index.css';
 import Masonry from 'react-masonry-css';
 import PersonIcon from "@mui/icons-material/Person.js";
+import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
 const Home = () => {
-    const {username} = useParams();
+    const [username,setUsername] =useState();
     const [pins, setPins] = useState([]);
     // Add this to your component's state
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [imageSrc, setImageSrc] = useState('');
     const [userData, setUserData] = useState(null);
-
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -63,6 +64,9 @@ const Home = () => {
         }
     };
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
+        console.log(userAuth.username)
         if (searchInput) {
             searchUsers();
         } else {
@@ -130,7 +134,7 @@ const Home = () => {
                                 </Button>
                             </Grid>
                             <Grid item style={{marginRight: '10px'}}>
-                                <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
+                                <Link to={`/creation`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>
                                         Create
                                     </Button>
@@ -153,7 +157,7 @@ const Home = () => {
                         </div>
 
                         {imageSrc ? (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <img
                                     src={imageSrc}
                                     alt="Profile Image"
@@ -161,7 +165,7 @@ const Home = () => {
                                 />
                             </Link>
                         ) : (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <IconButton
                                     edge="end"
                                     aria-label="account of current user"
@@ -177,9 +181,15 @@ const Home = () => {
                                 </IconButton>
                             </Link>
                         )}
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                            <MoreVertIcon/>
+                        <IconButton
+                            aria-label='display more actions'
+                            edge='end'
+                            color='inherit'
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                        >
+                            <MoreVertIcon />
                         </IconButton>
+                        <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
                     </Toolbar>
                 </AppBar>
             </div>
@@ -191,7 +201,7 @@ const Home = () => {
                 >
                     {pins.map((pin) => (
                         <div key={pin.post_id}>
-                            <Link to={`/${username}/post/${pin.post_id}`} style={{textDecoration: 'none'}}>
+                            <Link to={`/post/${pin.post_id}`} style={{textDecoration: 'none'}}>
                                 <Pin post={pin}/>
                             </Link>
                         </div>
@@ -220,8 +230,10 @@ const Home = () => {
                     <List>
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
-                                <PersonIcon sx={{fontSize: 35, color: '#c6815a', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username}/>
+                                <PersonIcon sx={{fontSize: 35, color: '#8e3b13', marginRight: '5px'}}/>
+                                <Link to={`/user/${user.username}`} style={{textDecoration: 'none'}}>
+                                    <ListItemText primary={user.username} sx={{color: 'black'}}/>
+                                </Link>
                             </ListItem>
                         ))}
                     </List>

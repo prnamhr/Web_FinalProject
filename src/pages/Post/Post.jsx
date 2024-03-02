@@ -20,10 +20,11 @@ import SendIcon from '@mui/icons-material/Send';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import './index.css'
+import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
 
 const Post = () => {
-    const {postId, username} = useParams();
+    const {postId} = useParams();
     const [postData, setPostData] = useState(null);
     const [imageSrc, setImageSrc] = useState('');
     const [comments, setComments] = useState([]);
@@ -37,6 +38,8 @@ const Post = () => {
     const [userData, setUserData] = useState(null);
     const [isFollowing, setIsFollowing] = useState(false);
     const [isSaved, setIsSaved] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [username,setUsername] =useState();
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -58,9 +61,11 @@ const Post = () => {
         justifyContent: 'center',
     };
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -91,11 +96,11 @@ const Post = () => {
         }
     };
     const handleSave = async () => {
-        if(!userData.user_id){
+        if (!userData.user_id) {
             return;
         }
         const requestBody = {
-            user_id:userData.user_id
+            user_id: userData.user_id
         };
         try {
 
@@ -120,15 +125,14 @@ const Post = () => {
         }
     };
     const handleFollow = async () => {
-        if(!postData.user_id){
+        if (!postData.user_id) {
             return;
         }
-        if(postData.user_id===userData.user_id)
-        {
+        if (postData.user_id === userData.user_id) {
             return;
         }
         const requestBody = {
-            user_id:postData.user_id
+            user_id: postData.user_id
         };
         try {
 
@@ -160,6 +164,8 @@ const Post = () => {
         }
     }, [searchInput]);
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchPostData = async () => {
             try {
                 const response = await fetch(`http://localhost:3000/post/${postId}`);
@@ -177,7 +183,7 @@ const Post = () => {
                     const imageUrl2 = `${storageUrl2}${encodeURIComponent(data.profile_picture)}?alt=media`;
                     setUserImageSrc2(imageUrl2);
                 }
-                const followResponse = await fetch(`http://localhost:3000/post/${username}/isFollowing/${data.username}`);
+                const followResponse = await fetch(`http://localhost:3000/post/${userAuth.username}/isFollowing/${data.username}`);
                 if (!followResponse.ok) {
                     throw new Error('Failed to fetch follow status');
                 }
@@ -185,7 +191,7 @@ const Post = () => {
                 const followData = await followResponse.json();
                 setIsFollowing(followData.isFollowing);
 
-                const response4 = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response4 = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response4.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -220,9 +226,11 @@ const Post = () => {
     }, [postId]);
 
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchLikeStatus = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/post/${username}/${postId}/like`, {
+                const response = await fetch(`http://localhost:3000/post/${userAuth.username}/${postId}/like`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -309,12 +317,12 @@ const Post = () => {
                             <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
                             <Grid container margin="10px">
                                 <Grid item style={{marginRight: '3px'}}>
-                                    <Link to={`/${username}`} style={{textDecoration: 'none'}}>
+                                    <Link to={`/inside`} style={{textDecoration: 'none'}}>
                                         <Button sx={{color: '#fff'}}>Home</Button>
                                     </Link>
                                 </Grid>
                                 <Grid item style={{marginRight: '10px'}}>
-                                    <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
+                                    <Link to={`/creation`} style={{textDecoration: 'none'}}>
                                         <Button sx={{color: '#fff'}}>
                                             Create
                                         </Button>
@@ -335,7 +343,7 @@ const Post = () => {
                                 />
                             </div>
                             {imageSrc2 ? (
-                                <Link to={`/${username}/user`}>
+                                <Link to={`/user`}>
                                     <img
                                         src={imageSrc2}
                                         alt="Profile Image"
@@ -343,7 +351,7 @@ const Post = () => {
                                     />
                                 </Link>
                             ) : (
-                                <Link to={`/${username}/user`}>
+                                <Link to={`/user`}>
                                     <IconButton
                                         edge="end"
                                         aria-label="account of current user"
@@ -359,14 +367,20 @@ const Post = () => {
                                     </IconButton>
                                 </Link>
                             )}
-                            <IconButton aria-label="display more actions" edge="end" color="inherit">
-                                <MoreVertIcon/>
+                            <IconButton
+                                aria-label='display more actions'
+                                edge='end'
+                                color='inherit'
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                            >
+                                <MoreVertIcon />
                             </IconButton>
+                            <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
                         </Toolbar>
                     </AppBar>
                 </div>
             </div>
-            <Link to={`/${username}`} style={{textDecoration: 'none'}}>
+            <Link to={`/inside`} style={{textDecoration: 'none'}}>
                 <IconButton color="inherit" aria-label="for you"
                             style={{display: 'flex', alignItems: 'center', marginTop: '30px', marginLeft: '10px'}}>
                     <ArrowBackIcon sx={{fontSize: '25px', color: '#fff'}}/>
@@ -475,10 +489,15 @@ const Post = () => {
                                                 <img
                                                     src={`${'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/'}${encodeURIComponent(comment.profile_picture)}?alt=media`}
                                                     alt={`${comment.username}'s Profile`}
-                                                    style={{ width: '30px', height: '30px', borderRadius: '50%', marginRight: '10px' }}
+                                                    style={{
+                                                        width: '30px',
+                                                        height: '30px',
+                                                        borderRadius: '50%',
+                                                        marginRight: '10px'
+                                                    }}
                                                 />
                                             ) : (
-                                                <PersonIcon sx={{ fontSize: 30, color: '#c6815a', marginRight: '5px' }} />
+                                                <PersonIcon sx={{fontSize: 30, color: '#c6815a', marginRight: '5px'}}/>
                                             )}
                                             <div style={{display: 'flex', flexDirection: 'column', marginRight: '5px'}}>
                                                 <Typography variant="h7">{comment.username}</Typography>
@@ -514,7 +533,7 @@ const Post = () => {
                         </div>
                         <div style={{display: 'flex'}}>
                             {imageSrc2 ? (
-                                <Link to={`/${username}/user`}>
+                                <Link to={`/user`}>
                                     <img
                                         src={imageSrc2}
                                         alt="Profile Image"
@@ -567,8 +586,10 @@ const Post = () => {
                     <List>
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
-                                <PersonIcon sx={{fontSize: 35, color: '#e27d60', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username}/>
+                                <PersonIcon sx={{fontSize: 35, color: '#8e3b13', marginRight: '5px'}}/>
+                                <Link to={`/user/${user.username}`} style={{textDecoration: 'none'}}>
+                                    <ListItemText primary={user.username} sx={{color: 'black'}}/>
+                                </Link>
                             </ListItem>
                         ))}
                     </List>

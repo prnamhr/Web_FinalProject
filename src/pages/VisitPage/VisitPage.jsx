@@ -2,19 +2,19 @@ import {useState, useEffect} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {
     AppBar, Toolbar, IconButton, InputBase, Button, Grid, List, ListItem, ListItemText, Paper
-    , Box, Typography, Stack
+    , Box, Typography
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import './index.css';
 import PersonIcon from "@mui/icons-material/Person.js";
 import {Dialog, DialogTitle, DialogContent} from '@mui/material';
 import Masonry from "react-masonry-css";
-import Pin from './Pin';
+import Pin from "../Home/Pin.jsx";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
-const User = () => {
+const VisitPage = () => {
+    const { usernameVisit} = useParams();
     const [username,setUsername] =useState();
     const [userData, setUserData] = useState(null);
     const [searchInput, setSearchInput] = useState('');
@@ -22,12 +22,13 @@ const User = () => {
     const [followersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [imageSrc, setImageSrc] = useState('');
+    const [imageSrc2, setImageSrc2] = useState('');
     const [openFollowersDialog, setOpenFollowersDialog] = useState(false);
     const [openFollowingDialog, setOpenFollowingDialog] = useState(false);
     const [followerList, setFollowerList] = useState([]);
     const [followingList, setFollowingList] = useState([]);
-    const [followingStatus, setFollowingStatus] = useState([]);
     const [postList, setPostList] = useState([]);
+    const [followingStatus, setFollowingStatus] = useState([]);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const searchStyle = {
         position: 'relative',
@@ -43,7 +44,18 @@ const User = () => {
         setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response2 = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                if (!response2.ok) {
+                    throw new Error('Failed to fetch user data');
+                }
+                const data2 = await response2.json();
+                if (data2[0].profile_picture) {
+                    const storageUrl2 = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
+                    const imageUrl2 = `${storageUrl2}${encodeURIComponent(data2[0].profile_picture)}?alt=media`;
+                    setImageSrc2(imageUrl2);
+                }
+
+                const response = await fetch(`http://localhost:3000/${usernameVisit}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -71,6 +83,7 @@ const User = () => {
                         const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
                         if (response.ok) {
                             const following = await response.json();
+                            console.log(following)
                             setFollowingCount(following.length);
                         }
                     } catch (error) {
@@ -95,11 +108,11 @@ const User = () => {
                 };
                 const fetchPosts = async () => {
                     try {
-                        const response = await fetch(`http://localhost:3000/post/${data[0].user_id}/saveList`);
+                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/posts`);
                         if (response.ok) {
-                            const saved = await response.json();
-                            console.log(saved)
-                            setPostList(saved);
+                            const following = await response.json();
+                            console.log(following)
+                            setPostList(following);
                         }
                     } catch (error) {
                         console.error('Error fetching following status:', error);
@@ -163,12 +176,6 @@ const User = () => {
         alignItems: 'center',
         justifyContent: 'center',
     };
-    const breakpointColumnsObj = {
-        default: 6, // Number of columns by default
-        1100: 5, // Number of columns on screens between 1100px and 700px
-        700: 4, // Number of columns on screens between 700px and 500px
-        500: 3, // Number of columns on screens below 500px
-    };
 
     const searchUsers = async () => {
         try {
@@ -192,11 +199,20 @@ const User = () => {
     }, [searchInput]);
 
 
+    const breakpointColumnsObj = {
+        default: 6, // Number of columns by default
+        1100: 5, // Number of columns on screens between 1100px and 700px
+        700: 4, // Number of columns on screens between 700px and 500px
+        500: 3, // Number of columns on screens below 500px
+    };
+
+
     const handleFollowersClick = async () => {
         try {
             const response = await fetch(`http://localhost:3000/user/${userData.user_id}/followers`);
             if (response.ok) {
                 const followers = await response.json();
+                console.log(followers)
                 if (followers.length > 0) {
                     setFollowerList(followers);
                     setOpenFollowersDialog(true);
@@ -257,10 +273,10 @@ const User = () => {
                             />
 
                         </div>
-                        {imageSrc ? (
+                        {imageSrc2 ? (
                             <Link to={`/user`}>
                                 <img
-                                    src={imageSrc}
+                                    src={imageSrc2}
                                     alt="Profile Image"
                                     style={{width: '40px', height: '40px', borderRadius: '50%'}}
                                 />
@@ -278,6 +294,7 @@ const User = () => {
                                 </IconButton>
                             </Link>
                         )}
+
                         <IconButton
                             aria-label='display more actions'
                             edge='end'
@@ -377,60 +394,18 @@ const User = () => {
                             </div>
                         </div>
                     )}
-                    <Link to={`/editProfile`}>
-                        <Button sx={{
-                            backgroundColor: '#8e3b13',
-                            marginTop: '10px',
-                            color: '#c6815a',
-                            borderRadius: '20px',
-                            "&:hover": {
-                                backgroundColor: "#c6815a",
-                                color: '#8e3b13',
-                            },
-                        }}>Edit profile</Button>
-                    </Link>
-                    <Stack direction="row" style={{marginTop: '40px'}}>
-                        <Link to={`/_created`}>
-                            <Button sx={{
 
-                                color: '#fff',
-                                borderRadius: '20px',
-                            }}>
-                                Created
-                            </Button>
-                        </Link>
-                        <Button
-                            sx={{
-                                borderRadius: '20px',
-                                position: 'relative',
-                                '&:disabled': {
-                                    color: '#fff',
-                                },
-                                '&:disabled::after': {
-                                    content: '""',
-                                    position: 'absolute',
-                                    left: 0,
-                                    right: 0,
-                                    bottom: '5px',
-                                    borderBottom: '1.5px solid #fff',
-                                },
-                            }}
-                            disabled
-                        >
-                            Saved
-                        </Button>
-                    </Stack>
                 </Box>
-                <div className="mainContainer2" style={{marginTop: '-290px'}}>
+                <div className="mainContainer2" style={{marginTop: '-400px'}}>
                     {postList && postList.length > 0 ? (
                         <Masonry
                             breakpointCols={breakpointColumnsObj}
                             className="my-masonry-grid"
                             columnClassName="my-masonry-grid_column"
                         >
-                            {postList.map((pin) => (
+                        {postList.map((pin) => (
                                 <div key={pin.post_id}>
-                                    <Link to={`/post/${pin.post_id}`} style={{textDecoration: 'none'}}>
+                                    <Link to={`/postEdit/${pin.post_id}`} style={{textDecoration: 'none'}}>
                                         <Pin post={pin}/>
                                     </Link>
                                 </div>
@@ -438,8 +413,7 @@ const User = () => {
                         </Masonry>
                     ) : (
                         <div style={{textAlign: 'center', marginTop: '20px'}}>
-                            <Typography style={{color: '#75868e'}}>Nothing to show...yet! Pins you saved will live
-                                here.</Typography>
+                            <Typography style={{color: '#75868e'}}>Nothing to show...yet!</Typography>
                         </div>
                     )}
                 </div>
@@ -470,13 +444,8 @@ const User = () => {
                                             ) : (
                                                 <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
                                             )}
-                                            <Link to={`/user/${user.username}`}
-                                                  style={{textDecoration: 'none'}}>
-                                                <Typography variant="h5" style={{
-                                                    fontWeight: 'bold',
-                                                    color: 'black'
-                                                }}>{user.username}</Typography>
-                                            </Link>
+                                            <Typography variant="h5"
+                                                        style={{fontWeight: 'bold'}}>{user.username}</Typography>
                                         </div>
                                         <Button
                                             variant="contained"
@@ -521,13 +490,8 @@ const User = () => {
                                         ) : (
                                             <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
                                         )}
-                                        <Link to={`/user/${user.username}`}
-                                              style={{textDecoration: 'none'}}>
-                                            <Typography variant="h5" style={{
-                                                fontWeight: 'bold',
-                                                color: 'black'
-                                            }}>{user.username}</Typography>
-                                        </Link>
+                                        <Typography variant="h5"
+                                                    style={{fontWeight: 'bold'}}>{user.username}</Typography>
                                     </div>
                                     <Button
                                         variant="contained"
@@ -581,4 +545,4 @@ const User = () => {
         </div>
     );
 };
-export default User;
+export default VisitPage;

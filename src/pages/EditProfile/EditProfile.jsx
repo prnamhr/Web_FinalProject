@@ -12,11 +12,12 @@ import {
     IconButton,
     Paper, List, ListItem, ListItemText, Alert
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 import PersonIcon from "@mui/icons-material/Person.js";
 import {Link, useParams} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
+import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
 const EditProfile = () => {
     const [name, setName] = useState('');
@@ -25,7 +26,6 @@ const EditProfile = () => {
     const [use, setUsername] = useState('');
     const [file, setFile] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
-    const {username} = useParams();
     const [userData, setUserData] = useState(null);
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -33,7 +33,8 @@ const EditProfile = () => {
     const [isUpdateSuccess, setIsUpdateSuccess] = useState(false);
     const [imageSrc, setImageSrc] = useState('');
     const navigate = useNavigate();
-
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [username,setUsername2] =useState();
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -85,10 +86,11 @@ const EditProfile = () => {
             if (!response.ok) {
                 throw new Error('Failed to update profile');
             }
-            if(use)
-            {
-                navigate(`/${use}/editProfile`);
-
+            const data = await response.json();
+            if (use) {
+                localStorage.clear();
+                localStorage.setItem("userAuth",JSON.stringify(data))
+                navigate(`/editProfile`);
             }
 
             if (file) {
@@ -119,9 +121,11 @@ const EditProfile = () => {
     };
 
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername2(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -193,12 +197,12 @@ const EditProfile = () => {
                         <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
                         <Grid container margin="10px">
                             <Grid item style={{marginRight: '3px'}}>
-                                <Link to={`/${username}`} style={{textDecoration: 'none'}}>
+                                <Link to={`/inside`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>Home</Button>
                                 </Link>
                             </Grid>
                             <Grid item style={{marginRight: '5px'}}>
-                                <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
+                                <Link to={`/creation`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>
                                         Create
                                     </Button>
@@ -221,45 +225,51 @@ const EditProfile = () => {
                         </div>
 
                         {imageSrc ? (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <img
                                     src={imageSrc}
                                     alt="Profile Image"
-                                    style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                    style={{width: '40px', height: '40px', borderRadius: '50%'}}
                                 />
                             </Link>
                         ) : (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <IconButton
                                     edge="end"
                                     aria-label="account of current user"
                                     aria-controls="primary-search-account-menu"
                                     aria-haspopup="true"
-                                    sx={{ color: '#fff' }}
+                                    sx={{color: '#fff'}}
                                 >
                                     <Avatar
                                         alt="Default Profile Picture"
                                         src={'/path/to/default/avatar.jpg'}
-                                        sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
+                                        sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
                                     />
                                 </IconButton>
                             </Link>
                         )}
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                            <MoreVertIcon/>
+                        <IconButton
+                            aria-label='display more actions'
+                            edge='end'
+                            color='inherit'
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                        >
+                            <MoreVertIcon />
                         </IconButton>
+                        <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
                     </Toolbar>
                 </AppBar>
             </div>
             <Box sx={{display: 'flex'}}>
                 <Box sx={{color: '#fff'}}>
                     <List>
-                        <ListItem button component={Link} to={`/${username}/editProfile`}>
+                        <ListItem button component={Link} to={`/editProfile`}>
                             <div style={{borderBottom: '1.5px solid #fff'}}>
                                 <ListItemText primary="Edit Profile"/>
                             </div>
                         </ListItem>
-                        <ListItem button component={Link} to={`/${username}/accountManagement`}>
+                        <ListItem button component={Link} to={`/accountManagement`}>
                             <ListItemText primary="Account Management"/>
                         </ListItem>
                     </List>
@@ -297,7 +307,7 @@ const EditProfile = () => {
                                     <img
                                         src={imagePreview}
                                         alt='Image Preview'
-                                        style={{ height: '80px', width: '80px', borderRadius: '50%', objectFit: 'cover' }}
+                                        style={{height: '80px', width: '80px', borderRadius: '50%', objectFit: 'cover'}}
                                     />
                                 ) : (
                                     <>
@@ -305,13 +315,23 @@ const EditProfile = () => {
                                             <img
                                                 src={imageSrc}
                                                 alt='Profile Picture'
-                                                style={{ height: '80px', width: '80px', borderRadius: '50%', objectFit: 'cover' }}
+                                                style={{
+                                                    height: '80px',
+                                                    width: '80px',
+                                                    borderRadius: '50%',
+                                                    objectFit: 'cover'
+                                                }}
                                             />
                                         ) : (
                                             <Avatar
                                                 alt="Default Profile Picture"
                                                 src={'/path/to/default/avatar.jpg'}
-                                                sx={{ width: 70, height: 70, color: '#c6815a', backgroundColor: '#8e3b13' }}
+                                                sx={{
+                                                    width: 70,
+                                                    height: 70,
+                                                    color: '#c6815a',
+                                                    backgroundColor: '#8e3b13'
+                                                }}
                                             />
                                         )}
                                     </>
@@ -446,8 +466,10 @@ const EditProfile = () => {
                     <List>
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
-                                <PersonIcon sx={{fontSize: 35, color: '#fff', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username}/>
+                                <PersonIcon sx={{fontSize: 35, color: '#8e3b13', marginRight: '5px'}}/>
+                                <Link to={`/user/${user.username}`} style={{textDecoration: 'none'}}>
+                                    <ListItemText primary={user.username} sx={{color: 'black'}}/>
+                                </Link>
                             </ListItem>
                         ))}
                     </List>

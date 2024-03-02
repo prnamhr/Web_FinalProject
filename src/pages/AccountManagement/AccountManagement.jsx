@@ -25,13 +25,12 @@ import PersonIcon from "@mui/icons-material/Person.js";
 import {Link, useParams} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
-
+import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
 const AccountManagement = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [gender, setGender] = useState('');
-    const {username} = useParams();
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [imageSrc, setImageSrc] = useState('');
@@ -39,6 +38,8 @@ const AccountManagement = () => {
     const [isUpdateSuccess, setIsUpdateSuccess] = useState(false);
     const [isInvalidEmail, setIsInvalidEmail] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [username,setUsername] =useState();
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -57,9 +58,11 @@ const AccountManagement = () => {
     };
 
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -181,12 +184,12 @@ const AccountManagement = () => {
                         <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
                         <Grid container margin="10px">
                             <Grid item style={{marginRight: '3px'}}>
-                                <Link to={`/${username}`} style={{textDecoration: 'none'}}>
+                                <Link to={`/inside`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>Home</Button>
                                 </Link>
                             </Grid>
                             <Grid item style={{marginRight: '5px'}}>
-                                <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
+                                <Link to={`/creation`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>
                                         Create
                                     </Button>
@@ -209,43 +212,49 @@ const AccountManagement = () => {
                         </div>
 
                         {imageSrc ? (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <img
                                     src={imageSrc}
                                     alt="Profile Image"
-                                    style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                    style={{width: '40px', height: '40px', borderRadius: '50%'}}
                                 />
                             </Link>
                         ) : (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <IconButton
                                     edge="end"
                                     aria-label="account of current user"
                                     aria-controls="primary-search-account-menu"
                                     aria-haspopup="true"
-                                    sx={{ color: '#fff' }}
+                                    sx={{color: '#fff'}}
                                 >
                                     <Avatar
                                         alt="Default Profile Picture"
                                         src={'/path/to/default/avatar.jpg'}
-                                        sx={{ width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13' }}
+                                        sx={{width: 40, height: 40, color: '#c6815a', backgroundColor: '#8e3b13'}}
                                     />
                                 </IconButton>
                             </Link>
                         )}
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                            <MoreVertIcon/>
+                        <IconButton
+                            aria-label='display more actions'
+                            edge='end'
+                            color='inherit'
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                        >
+                            <MoreVertIcon />
                         </IconButton>
+                        <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
                     </Toolbar>
                 </AppBar>
             </div>
             <Box sx={{display: 'flex'}}>
                 <Box sx={{color: '#fff'}}>
                     <List>
-                        <ListItem button component={Link} to={`/${username}/editProfile`}>
+                        <ListItem button component={Link} to={`/editProfile`}>
                             <ListItemText primary="Edit Profile"/>
                         </ListItem>
-                        <ListItem button component={Link} to={`/${username}/accountManagement`}>
+                        <ListItem button component={Link} to={`/accountManagement`}>
                             <div style={{borderBottom: '1.5px solid #fff'}}>
                                 <ListItemText primary="Account Management"/>
                             </div>
@@ -269,7 +278,8 @@ const AccountManagement = () => {
                         Account management
                     </Typography>
                     <Typography gutterBottom sx={{color: '#8e3b13', fontSize: '15px', marginBottom: '20px'}}>
-                        Keep your personal details private. Information you add here is visible to anyone who can view your profile.
+                        Keep your personal details private. Information you add here is visible to anyone who can view
+                        your profile.
                     </Typography>
                     <Typography variant="h5" gutterBottom sx={{color: '#8e3b13'}}>
                         Your account
@@ -281,7 +291,7 @@ const AccountManagement = () => {
                             </Alert>
                         )}
                         {isInvalidEmail && (
-                            <Alert severity="error" sx={{ marginBottom: '15px' }}>
+                            <Alert severity="error" sx={{marginBottom: '15px'}}>
                                 Invalid email format. Please enter a valid email address.
                             </Alert>
                         )}
@@ -319,7 +329,7 @@ const AccountManagement = () => {
 
                         <Box style={{display: 'flex', gap: '10px', marginTop: '10px'}}>
                             <FormControl component="fieldset">
-                                <FormLabel component="legend" sx={{ color: '#8e3b13' }}>
+                                <FormLabel component="legend" sx={{color: '#8e3b13'}}>
                                     Gender
                                 </FormLabel>
                                 <RadioGroup
@@ -328,31 +338,37 @@ const AccountManagement = () => {
                                     name="radio-buttons-group"
                                     value={gender}
                                     onChange={(e) => setGender(e.target.value)}
-                                    sx={{ color: '#8e3b13' }}
+                                    sx={{color: '#8e3b13'}}
                                 >
                                     <FormControlLabel
                                         value="female"
-                                        control={<Radio sx={{ color: '#8e3b13',
+                                        control={<Radio sx={{
+                                            color: '#8e3b13',
                                             '&.Mui-checked': {
-                                            color:'#c6815a' ,
-                                        },}} />}
-                                        label={<Typography sx={{ color: '#8e3b13' }}>Female</Typography>}
+                                                color: '#c6815a',
+                                            },
+                                        }}/>}
+                                        label={<Typography sx={{color: '#8e3b13'}}>Female</Typography>}
                                     />
                                     <FormControlLabel
                                         value="male"
-                                        control={<Radio sx={{ color: '#8e3b13',
+                                        control={<Radio sx={{
+                                            color: '#8e3b13',
                                             '&.Mui-checked': {
-                                            color:'#c6815a' ,
-                                        }, }} />}
-                                        label={<Typography sx={{ color: '#8e3b13' }}>Male</Typography>}
+                                                color: '#c6815a',
+                                            },
+                                        }}/>}
+                                        label={<Typography sx={{color: '#8e3b13'}}>Male</Typography>}
                                     />
                                     <FormControlLabel
                                         value="other"
-                                        control={<Radio sx={{color: '#8e3b13',
+                                        control={<Radio sx={{
+                                            color: '#8e3b13',
                                             '&.Mui-checked': {
-                                            color:'#c6815a' ,
-                                        }, }} />}
-                                        label={<Typography sx={{ color: '#8e3b13' }}>Other</Typography>}
+                                                color: '#c6815a',
+                                            },
+                                        }}/>}
+                                        label={<Typography sx={{color: '#8e3b13'}}>Other</Typography>}
                                     />
                                 </RadioGroup>
                             </FormControl>
@@ -372,7 +388,7 @@ const AccountManagement = () => {
                                 }}>
                             Save Changes
                         </Button>
-                        <div style={{display: 'flex' , alignItems:'center'}}>
+                        <div style={{display: 'flex', alignItems: 'center'}}>
                             <div>
                                 <Typography variant="h6" gutterBottom sx={{color: '#8e3b13', marginTop: '30px'}}>
                                     Delete your data and account
@@ -418,9 +434,9 @@ const AccountManagement = () => {
                         Cancel
                     </Button>
                     <Link to={`/`} style={{textDecoration: 'none'}}>
-                    <Button onClick={handleConfirmDelete} color="primary" autoFocus>
-                        Confirm
-                    </Button>
+                        <Button onClick={handleConfirmDelete} color="primary" autoFocus>
+                            Confirm
+                        </Button>
                     </Link>
                 </DialogActions>
             </Dialog>
@@ -446,8 +462,10 @@ const AccountManagement = () => {
                     <List>
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
-                                <PersonIcon sx={{fontSize: 35, color: '#fff', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username}/>
+                                <PersonIcon sx={{fontSize: 35, color: '#8e3b13', marginRight: '5px'}}/>
+                                <Link to={`/user/${user.username}`} style={{textDecoration: 'none'}}>
+                                    <ListItemText primary={user.username} sx={{color: 'black'}}/>
+                                </Link>
                             </ListItem>
                         ))}
                     </List>

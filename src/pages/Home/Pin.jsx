@@ -9,7 +9,7 @@ const Pin = ({ post }) => {
     const [newRandomHeight, setNewRandomHeight] = useState('');
     const [isSaved, setIsSaved] = useState(false);
     const [userData, setUserData] = useState(null);
-    const { username} = useParams();
+    const [username,setUsername] =useState();
     const handleSave = async () => {
         if(!userData.user_id){
             return;
@@ -41,7 +41,6 @@ const Pin = ({ post }) => {
     };
 
     useEffect(() => {
-        console.log(post)
         // Construct the complete URL for the image based on your Firebase Storage configuration
         const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
         const imageUrl = `${storageUrl}${encodeURIComponent(post.photo_content)}?alt=media`;
@@ -54,9 +53,11 @@ const Pin = ({ post }) => {
     }, [post.photo_content]);
 
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchPostData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }

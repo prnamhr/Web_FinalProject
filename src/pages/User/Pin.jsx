@@ -9,7 +9,7 @@ const Pin = ({ post }) => {
     const [newRandomHeight, setNewRandomHeight] = useState('');
     const [isSaved, setIsSaved] = useState(true);
     const [userData, setUserData] = useState(null);
-    const { username} = useParams();
+    const [username,setUsername] =useState();
     const handleSave = async () => {
         if(!userData.user_id){
             return;
@@ -54,9 +54,11 @@ const Pin = ({ post }) => {
     }, [post.photo_content]);
 
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchPostData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }

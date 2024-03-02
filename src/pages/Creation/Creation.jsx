@@ -1,4 +1,4 @@
-import {Link, useParams} from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import {
     Input,
     Box,
@@ -9,7 +9,7 @@ import {
     InputLabel,
     FormControl,
     Paper,
-    Typography, Alert, List, ListItem, ListItemText, Avatar,
+    Typography, Alert, List, ListItem, ListItemText, Avatar
 } from '@mui/material';
 import {
     AppBar,
@@ -19,14 +19,12 @@ import {
     Grid,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {useState, useEffect} from 'react';
 import PersonIcon from "@mui/icons-material/Person.js";
-
+import DropdownMenu from './DropdownMenu.jsx'
 const Creation = () => {
-    const {username} = useParams();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [board, setBoard] = useState('');
@@ -39,6 +37,8 @@ const Creation = () => {
     const [searchResults, setSearchResults] = useState([]);
     const [imageSrc, setImageSrc] = useState('');
     const [userData, setUserData] = useState(null);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [username,setUsername] =useState();
     const fetchUserId = async () => {
         try {
             const response = await fetch(`http://localhost:3000/postCreation/getUserId?username=${username}`);
@@ -88,6 +88,8 @@ const Creation = () => {
     };
 
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         if (searchInput) {
             searchUsers();
         } else {
@@ -180,7 +182,7 @@ const Creation = () => {
                         <img src='/pic/logo.png' alt='Logo' style={{width: '30px', height: '30px'}}/>
                         <Grid container margin='10px'>
                             <Grid item style={{marginRight: '3px'}}>
-                                <Link to={`/${username}`} style={{textDecoration: 'none'}}>
+                                <Link to={`/inside`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>Home</Button>
                                 </Link>
                             </Grid>
@@ -207,7 +209,7 @@ const Creation = () => {
                         </div>
 
                         {imageSrc ? (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <img
                                     src={imageSrc}
                                     alt="Profile Image"
@@ -215,7 +217,7 @@ const Creation = () => {
                                 />
                             </Link>
                         ) : (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <IconButton
                                     edge="end"
                                     aria-label="account of current user"
@@ -231,9 +233,17 @@ const Creation = () => {
                                 </IconButton>
                             </Link>
                         )}
-                        <IconButton aria-label='display more actions' edge='end' color='inherit'>
-                            <MoreVertIcon/>
+
+                        <IconButton
+                            aria-label='display more actions'
+                            edge='end'
+                            color='inherit'
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                        >
+                            <MoreVertIcon />
                         </IconButton>
+                        <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
+
                     </Toolbar>
                 </AppBar>
             </div>
@@ -359,8 +369,10 @@ const Creation = () => {
                     <List>
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
-                                <PersonIcon sx={{fontSize: 35, color: '#e27d60', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username}/>
+                                <PersonIcon sx={{fontSize: 35, color: '#8e3b13', marginRight: '5px'}}/>
+                                <Link to={`/user/${user.username}`} style={{textDecoration: 'none'}}>
+                                    <ListItemText primary={user.username} sx={{color: 'black'}}/>
+                                </Link>
                             </ListItem>
                         ))}
                     </List>

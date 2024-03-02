@@ -31,10 +31,12 @@ import SendIcon from '@mui/icons-material/Send';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import {TextField} from '@mui/material';
+import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
 
 const PostEdit = () => {
-    const {username,postId} = useParams();
+    const { postId} = useParams();
+    const [username,setUsername] =useState();
     const [postData, setPostData] = useState(null);
     const [imageSrc, setImageSrc] = useState('');
     const [comments, setComments] = useState([]);
@@ -50,7 +52,7 @@ const PostEdit = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const handleDeleteAccount = async () => {
         setDeleteDialogOpen(true);
     };
@@ -126,9 +128,11 @@ const PostEdit = () => {
         justifyContent: 'center',
     };
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -204,9 +208,11 @@ const PostEdit = () => {
     }, [postId]);
 
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchLikeStatus = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/post/${username}/${postId}/like`, {
+                const response = await fetch(`http://localhost:3000/post/${userAuth.username}/${postId}/like`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -351,7 +357,7 @@ const PostEdit = () => {
                                         sx={{
                                             backgroundColor: '#8e3b13',
                                             marginTop: '10px',
-                                            marginRight:'2px',
+                                            marginRight: '2px',
                                             color: '#c6815a',
                                             borderRadius: '20px',
                                             mt: 3,
@@ -389,12 +395,12 @@ const PostEdit = () => {
                             <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
                             <Grid container margin="10px">
                                 <Grid item style={{marginRight: '3px'}}>
-                                    <Link to={`/${username}`} style={{textDecoration: 'none'}}>
+                                    <Link to={`/inside`} style={{textDecoration: 'none'}}>
                                         <Button sx={{color: '#fff'}}>Home</Button>
                                     </Link>
                                 </Grid>
                                 <Grid item style={{marginRight: '10px'}}>
-                                    <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
+                                    <Link to={`/creation`} style={{textDecoration: 'none'}}>
                                         <Button sx={{color: '#fff'}}>
                                             Create
                                         </Button>
@@ -415,7 +421,7 @@ const PostEdit = () => {
                                 />
                             </div>
                             {imageSrc2 ? (
-                                <Link to={`/${username}/user`}>
+                                <Link to={`/user`}>
                                     <img
                                         src={imageSrc2}
                                         alt="Profile Image"
@@ -423,7 +429,7 @@ const PostEdit = () => {
                                     />
                                 </Link>
                             ) : (
-                                <Link to={`/${username}/user`}>
+                                <Link to={`/user`}>
                                     <IconButton
                                         edge="end"
                                         aria-label="account of current user"
@@ -439,14 +445,20 @@ const PostEdit = () => {
                                     </IconButton>
                                 </Link>
                             )}
-                            <IconButton aria-label="display more actions" edge="end" color="inherit">
-                                <MoreVertIcon/>
+                            <IconButton
+                                aria-label='display more actions'
+                                edge='end'
+                                color='inherit'
+                                onClick={() => setDropdownOpen(!dropdownOpen)}
+                            >
+                                <MoreVertIcon />
                             </IconButton>
+                            <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
                         </Toolbar>
                     </AppBar>
                 </div>
             </div>
-            <Link to={`/${username}/_created`} style={{textDecoration: 'none'}}>
+            <Link to={`/_created`} style={{textDecoration: 'none'}}>
                 <IconButton color="inherit" aria-label="for you"
                             style={{display: 'flex', alignItems: 'center', marginTop: '30px', marginLeft: '10px'}}>
                     <ArrowBackIcon sx={{fontSize: '25px', color: '#fff'}}/>
@@ -599,7 +611,7 @@ const PostEdit = () => {
                         </div>
                         <div style={{display: 'flex'}}>
                             {imageSrc2 ? (
-                                <Link to={`/${username}/user`}>
+                                <Link to={`/user`}>
                                     <img
                                         src={imageSrc2}
                                         alt="Profile Image"
@@ -646,7 +658,7 @@ const PostEdit = () => {
                     <Button onClick={handleCancelDelete} color="primary">
                         Cancel
                     </Button>
-                    <Link to={`/${username}/_created`} style={{textDecoration: 'none'}}>
+                    <Link to={`/_created`} style={{textDecoration: 'none'}}>
                         <Button onClick={handleConfirmDelete} color="primary" autoFocus>
                             Confirm
                         </Button>
@@ -675,8 +687,10 @@ const PostEdit = () => {
                     <List>
                         {searchResults.map((user) => (
                             <ListItem key={user.id}>
-                                <PersonIcon sx={{fontSize: 35, color: '#e27d60', marginRight: '5px'}}/>
-                                <ListItemText primary={user.username}/>
+                                <PersonIcon sx={{fontSize: 35, color: '#8e3b13', marginRight: '5px'}}/>
+                                <Link to={`/user/${user.username}`} style={{textDecoration: 'none'}}>
+                                    <ListItemText primary={user.username} sx={{color: 'black'}}/>
+                                </Link>
                             </ListItem>
                         ))}
                     </List>

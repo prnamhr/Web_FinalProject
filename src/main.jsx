@@ -11,6 +11,8 @@ import EditProfil from './pages/EditProfile/EditProfile.jsx'
 import AccountManagement from './pages/AccountManagement/AccountManagement.jsx'
 import UserPosts from './pages/UserPosts/UserPosts.jsx'
 import PostEdit from './pages/PostEdit/PostEdit.jsx'
+import VisitPage from './pages/VisitPage/VisitPage.jsx'
+import FindUser from './pages/ForgotPass/FindUser.jsx'
 import './index.css'
 import {
   createBrowserRouter,
@@ -31,36 +33,45 @@ const router = createBrowserRouter([
     element: <SignUp />,
   },
   {
-    path:"/:username",
+    path:"/inside",
     element:<Home/>
   },
   {
-    path:"/:username/creation",
+    path:"creation",
     element:<Creation/>
   },{
-    path:"/:username/post/:postId",
+    path:"/post/:postId",
     element: <Post/>
   },
   {
-    path:"/:username/user",
+    path:"/user",
     element: <User/>
   },
   {
-    path:"/:username/editProfile",
+    path:"/editProfile",
     element: <EditProfil/>
   }
   ,
   {
-    path:"/:username/accountManagement",
+    path:"/accountManagement",
     element: <AccountManagement/>
   },
   {
-    path:"/:username/_created",
+    path:"/_created",
     element: <UserPosts/>
   },
   {
-    path:"/:username/postEdit/:postId",
+    path:"/postEdit/:postId",
     element: <PostEdit/>
+  },
+  {
+    path:"/user/:usernameVisit",
+    element: <VisitPage/>
+  }
+  ,
+  {
+    path:"/:username/findUser",
+    element: <FindUser/>
   }
 ]);
 

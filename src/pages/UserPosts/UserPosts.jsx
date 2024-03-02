@@ -2,17 +2,19 @@ import {useState, useEffect} from 'react';
 import {Link, useParams} from 'react-router-dom';
 import {
     AppBar, Toolbar, IconButton, InputBase, Button, Grid, List, ListItem, ListItemText, Paper
-    , Box, Typography,Stack
+    , Box, Typography, Stack
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import PersonIcon from "@mui/icons-material/Person.js";
-import { Dialog, DialogTitle, DialogContent } from '@mui/material';
+import {Dialog, DialogTitle, DialogContent} from '@mui/material';
 import Masonry from "react-masonry-css";
 import Pin from "../Home/Pin.jsx";
+import DropdownMenu from '../Creation/DropdownMenu.jsx'
+
 const UserPosts = () => {
-    const {username} = useParams();
+    const [username,setUsername] =useState();
     const [userData, setUserData] = useState(null);
     const [searchInput, setSearchInput] = useState('');
     const [searchResults, setSearchResults] = useState([]);
@@ -25,6 +27,7 @@ const UserPosts = () => {
     const [followingList, setFollowingList] = useState([]);
     const [postList, setPostList] = useState([]);
     const [followingStatus, setFollowingStatus] = useState([]);
+    const [dropdownOpen, setDropdownOpen] = useState(false);
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -35,18 +38,21 @@ const UserPosts = () => {
         width: '660%',
     };
     useEffect(() => {
+        const userAuth= JSON.parse(localStorage.getItem("userAuth"))
+        setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
                 const data = await response.json();
                 setUserData(data[0]);
-                if(data[0].profile_picture){
+                if (data[0].profile_picture) {
                     const storageUrl = 'https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/';
                     const imageUrl = `${storageUrl}${encodeURIComponent(data[0].profile_picture)}?alt=media`;
-                    setImageSrc(imageUrl);}
+                    setImageSrc(imageUrl);
+                }
 
                 const fetchFollowersCount = async () => {
                     try {
@@ -114,7 +120,7 @@ const UserPosts = () => {
     const handleFollow = async (followerId) => {
 
         const requestBody = {
-            user_id:followerId
+            user_id: followerId
         };
         try {
 
@@ -134,7 +140,7 @@ const UserPosts = () => {
             setFollowingCount((prevCount) => (!isFollowing ? prevCount + 1 : prevCount - 1));
 
             setFollowingStatus((prevStatus) => {
-                const newStatus = { ...prevStatus };
+                const newStatus = {...prevStatus};
                 newStatus[followerId] = !isFollowing;
                 return newStatus;
             });
@@ -142,6 +148,7 @@ const UserPosts = () => {
             console.error('Error updating follow status:', error);
         }
     };
+
     function capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
@@ -226,12 +233,12 @@ const UserPosts = () => {
                         <img src="/pic/logo.png" alt="Logo" style={{width: '45px', height: '45px'}}/>
                         <Grid container margin="10px">
                             <Grid item style={{marginRight: '3px'}}>
-                                <Link to={`/${username}`} style={{textDecoration: 'none'}}>
+                                <Link to={`/inside`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>Home</Button>
                                 </Link>
                             </Grid>
                             <Grid item style={{marginRight: '5px'}}>
-                                <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
+                                <Link to={`/creation`} style={{textDecoration: 'none'}}>
                                     <Button sx={{color: '#fff'}}>
                                         Create
                                     </Button>
@@ -253,30 +260,36 @@ const UserPosts = () => {
 
                         </div>
                         {imageSrc ? (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <img
                                     src={imageSrc}
                                     alt="Profile Image"
-                                    style={{ width: '40px', height: '40px', borderRadius: '50%' }}
+                                    style={{width: '40px', height: '40px', borderRadius: '50%'}}
                                 />
                             </Link>
                         ) : (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <IconButton
                                     edge="end"
                                     aria-label="account of current user"
                                     aria-controls="primary-search-account-menu"
                                     aria-haspopup="true"
-                                    sx={{ color: '#fff' }}
+                                    sx={{color: '#fff'}}
                                 >
                                     <AccountCircle style={{fontSize: '40px'}}/>
                                 </IconButton>
                             </Link>
                         )}
 
-                        <IconButton aria-label="display more actions" edge="end" color="inherit">
-                            <MoreVertIcon/>
+                        <IconButton
+                            aria-label='display more actions'
+                            edge='end'
+                            color='inherit'
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                        >
+                            <MoreVertIcon />
                         </IconButton>
+                        <DropdownMenu open={dropdownOpen} onClose={() => setDropdownOpen(false)} />
                     </Toolbar>
                 </AppBar>
             </div>
@@ -290,7 +303,7 @@ const UserPosts = () => {
                 }}>
                     <div>
                         {imageSrc ? (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <img
                                     src={imageSrc}
                                     alt="Profile Image"
@@ -298,7 +311,7 @@ const UserPosts = () => {
                                 />
                             </Link>
                         ) : (
-                            <Link to={`/${username}/user`}>
+                            <Link to={`/user`}>
                                 <div style={{color: '#fff'}}>
                                     <IconButton
                                         edge="end"
@@ -333,6 +346,14 @@ const UserPosts = () => {
                                     {userData.username}
                                 </Typography>
                             </div>
+                            <div style={{marginTop: '5px'}}>
+                                <Typography style={{
+                                    fontWeight: 'bold', textTransform: 'capitalize', color: '#75868e',
+                                    textAlign: 'center', maxWidth: '400px', margin: 'auto'
+                                }}>
+                                    {userData.bio}
+                                </Typography>
+                            </div>
                             <div style={{
                                 marginTop: '5px',
                                 display: 'flex',
@@ -359,7 +380,7 @@ const UserPosts = () => {
                             </div>
                         </div>
                     )}
-                    <Link to={`/${username}/editProfile`}>
+                    <Link to={`/editProfile`}>
                         <Button sx={{
                             backgroundColor: '#8e3b13',
                             marginTop: '10px',
@@ -380,7 +401,7 @@ const UserPosts = () => {
                         }}>
                             Created
                         </Button>
-                        <Link to={`/${username}/user`}>
+                        <Link to={`/user`}>
                             <Button
                                 sx={{
                                     borderRadius: '20px',
@@ -406,7 +427,7 @@ const UserPosts = () => {
                         >
                             {postList.map((pin) => (
                                 <div key={pin.post_id}>
-                                    <Link to={`/${username}/postEdit/${pin.post_id}`} style={{textDecoration: 'none'}}>
+                                    <Link to={`/postEdit/${pin.post_id}`} style={{textDecoration: 'none'}}>
                                         <Pin post={pin}/>
                                     </Link>
                                 </div>
@@ -414,23 +435,24 @@ const UserPosts = () => {
                         </Masonry>
                     ) : (
                         <div style={{textAlign: 'center', marginTop: '20px'}}>
-                            <Typography style={{color: '#75868e'}}>Nothing to show...yet! Pins you create will live here.</Typography>
-                            <Link to={`/${username}/creation`} style={{textDecoration: 'none'}}>
-                            <Button
-                                variant="contained"
-                                sx={{
-                                    marginTop: '10px',
-                                    backgroundColor: '#8e3b13',
-                                    color: '#c6815a',
-                                    borderRadius: '20px',
-                                    "&:hover": {
-                                        backgroundColor: "#c6815a",
-                                        color: '#8e3b13',
-                                    },
-                                }}
-                            >
-                                Create Pin
-                            </Button>
+                            <Typography style={{color: '#75868e'}}>Nothing to show...yet! Pins you create will live
+                                here.</Typography>
+                            <Link to={`/creation`} style={{textDecoration: 'none'}}>
+                                <Button
+                                    variant="contained"
+                                    sx={{
+                                        marginTop: '10px',
+                                        backgroundColor: '#8e3b13',
+                                        color: '#c6815a',
+                                        borderRadius: '20px',
+                                        "&:hover": {
+                                            backgroundColor: "#c6815a",
+                                            color: '#8e3b13',
+                                        },
+                                    }}
+                                >
+                                    Create Pin
+                                </Button>
                             </Link>
                         </div>
                     )}
@@ -462,8 +484,13 @@ const UserPosts = () => {
                                             ) : (
                                                 <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
                                             )}
-                                            <Typography variant="h5"
-                                                        style={{fontWeight: 'bold'}}>{user.username}</Typography>
+                                            <Link to={`/user/${user.username}`}
+                                                  style={{textDecoration: 'none'}}>
+                                                <Typography variant="h5" style={{
+                                                    fontWeight: 'bold',
+                                                    color: 'black'
+                                                }}>{user.username}</Typography>
+                                            </Link>
                                         </div>
                                         <Button
                                             variant="contained"
@@ -508,8 +535,13 @@ const UserPosts = () => {
                                         ) : (
                                             <PersonIcon sx={{fontSize: 50, color: '#c6815a', marginRight: '20px'}}/>
                                         )}
-                                        <Typography variant="h5"
-                                                    style={{fontWeight: 'bold'}}>{user.username}</Typography>
+                                        <Link to={`/user/${user.username}`}
+                                              style={{textDecoration: 'none'}}>
+                                            <Typography variant="h5" style={{
+                                                fontWeight: 'bold',
+                                                color: 'black'
+                                            }}>{user.username}</Typography>
+                                        </Link>
                                     </div>
                                     <Button
                                         variant="contained"
@@ -550,8 +582,10 @@ const UserPosts = () => {
                         <List>
                             {searchResults.map((user) => (
                                 <ListItem key={user.id}>
-                                    <PersonIcon sx={{fontSize: 35, color: '#fff', marginRight: '5px'}}/>
-                                    <ListItemText primary={user.username}/>
+                                    <PersonIcon sx={{fontSize: 35, color: '#8e3b13', marginRight: '5px'}}/>
+                                    <Link to={`/user/${user.username}`} style={{textDecoration: 'none'}}>
+                                        <ListItemText primary={user.username} sx={{color: 'black'}}/>
+                                    </Link>
                                 </ListItem>
                             ))}
                         </List>
