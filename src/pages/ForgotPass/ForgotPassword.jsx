@@ -79,7 +79,7 @@ export default function ForgotPassword() {
                     }}
                 >
                     <img
-                        src="/pic/logo.jpg"
+                        src="/Login/Logo.jpg"
                         alt="Pinterest Logo"
                         style={{width: '200px', height: '200px'}}
                     />

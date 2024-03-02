@@ -113,7 +113,7 @@ export default function Login() {
                 >
 
                     <img
-                        src="../pic/Logo.jpg"
+                        src="Logo.jpg"
                         alt="Pinterest Logo"
                         style={{width: "200px", height: "200px"}}
                     />

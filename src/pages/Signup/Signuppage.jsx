@@ -133,7 +133,7 @@ export default function Signup() {
                         </Typography>
                     </Link>
                     <img
-                        src="/pic/logo.jpg"
+                        src="/Login/Logo.jpg"
                         alt="Pinterest Logo"
                         style={{width: "180px", height: "180px"}}
                     />
