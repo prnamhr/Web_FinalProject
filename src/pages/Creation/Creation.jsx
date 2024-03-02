@@ -24,6 +24,8 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {useState, useEffect} from 'react';
 import PersonIcon from "@mui/icons-material/Person.js";
 import DropdownMenu from './DropdownMenu.jsx'
+
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const Creation = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -41,7 +43,7 @@ const Creation = () => {
     const [username,setUsername] =useState();
     const fetchUserId = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/postCreation/getUserId?username=${username}`);
+            const response = await fetch(`${BASE_URL}/postCreation/getUserId?username=${username}`);
             if (response.status === 200) {
                 const data = await response.json();
                 return data.user_id;
@@ -56,7 +58,7 @@ const Creation = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`${BASE_URL}/${username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -76,7 +78,7 @@ const Creation = () => {
     }, [username, userData, setImageSrc, setUserData]);
     const searchUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
+            const response = await fetch(`${BASE_URL}/${searchInput}/finduser`);
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }
@@ -120,7 +122,7 @@ const Creation = () => {
             formData.append('description', description);
             formData.append('board_id', board);
 
-            const response = await fetch('http://localhost:3000/postCreation/', {
+            const response = await fetch(`${BASE_URL}/postCreation`, {
                 method: 'POST',
                 body: formData,
             });

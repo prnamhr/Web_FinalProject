@@ -22,7 +22,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import './index.css'
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
 
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const Post = () => {
     const {postId} = useParams();
     const [postData, setPostData] = useState(null);
@@ -65,7 +65,7 @@ const Post = () => {
         setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response = await fetch(`${BASE_URL}/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -85,7 +85,7 @@ const Post = () => {
     }, [username, userData, setImageSrc2, setUserData]);
     const searchUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
+            const response = await fetch(`${BASE_URL}/${searchInput}/finduser`);
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }
@@ -104,7 +104,7 @@ const Post = () => {
         };
         try {
 
-            const response = await fetch(`http://localhost:3000/post/${postId}/savePost`, {
+            const response = await fetch(`${BASE_URL}/post/${postId}/savePost`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -136,7 +136,7 @@ const Post = () => {
         };
         try {
 
-            const response = await fetch(`http://localhost:3000/post/${username}/follow`, {
+            const response = await fetch(`${BASE_URL}/post/${username}/follow`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -168,7 +168,7 @@ const Post = () => {
         setUsername(userAuth.username)
         const fetchPostData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/post/${postId}`);
+                const response = await fetch(`${BASE_URL}/post/${postId}`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch post data');
                 }
@@ -183,7 +183,7 @@ const Post = () => {
                     const imageUrl2 = `${storageUrl2}${encodeURIComponent(data.profile_picture)}?alt=media`;
                     setUserImageSrc2(imageUrl2);
                 }
-                const followResponse = await fetch(`http://localhost:3000/post/${userAuth.username}/isFollowing/${data.username}`);
+                const followResponse = await fetch(`${BASE_URL}/post/${userAuth.username}/isFollowing/${data.username}`);
                 if (!followResponse.ok) {
                     throw new Error('Failed to fetch follow status');
                 }
@@ -191,14 +191,14 @@ const Post = () => {
                 const followData = await followResponse.json();
                 setIsFollowing(followData.isFollowing);
 
-                const response4 = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response4 = await fetch(`${BASE_URL}/${userAuth.username}/finduser`);
                 if (!response4.ok) {
                     throw new Error('Failed to fetch user data');
                 }
                 const data3 = await response4.json();
                 setUserData(data3[0])
 
-                const saveResponse = await fetch(`http://localhost:3000/post/${data3[0].user_id}/${postId}/isSaved`);
+                const saveResponse = await fetch(`${BASE_URL}/post/${data3[0].user_id}/${postId}/isSaved`);
                 if (!saveResponse.ok) {
                     throw new Error('Failed to fetch follow status');
                 }
@@ -207,14 +207,14 @@ const Post = () => {
                 console.log(saveData)
                 setIsSaved(saveData.isSaved);
 
-                const commentsResponse = await fetch(`http://localhost:3000/post/${postId}/comments`);
+                const commentsResponse = await fetch(`${BASE_URL}/post/${postId}/comments`);
                 if (!commentsResponse.ok) {
                     throw new Error('Failed to fetch comments');
                 }
                 const addedComment = await commentsResponse.json();
                 setComments(addedComment);
 
-                const response3 = await fetch(`http://localhost:3000/post/${postId}/likes`);
+                const response3 = await fetch(`${BASE_URL}/post/${postId}/likes`);
                 const data2 = await response3.json();
                 setLikeLen(data2.length);
             } catch (error) {
@@ -230,7 +230,7 @@ const Post = () => {
         setUsername(userAuth.username)
         const fetchLikeStatus = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/post/${userAuth.username}/${postId}/like`, {
+                const response = await fetch(`${BASE_URL}/post/${userAuth.username}/${postId}/like`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -255,7 +255,7 @@ const Post = () => {
 
     const handleLike = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/post/${username}/${postId}/like`, {
+            const response = await fetch(`${BASE_URL}/post/${username}/${postId}/like`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -280,7 +280,7 @@ const Post = () => {
                 return;
             }
 
-            const response = await fetch(`http://localhost:3000/post/${username}/${postId}/comment`, {
+            const response = await fetch(`${BASE_URL}/post/${username}/${postId}/comment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -294,7 +294,7 @@ const Post = () => {
                 throw new Error('Failed to submit comment');
             }
 
-            const updatedCommentsResponse = await fetch(`http://localhost:3000/post/${postId}/comments`);
+            const updatedCommentsResponse = await fetch(`${BASE_URL}/post/${postId}/comments`);
             if (!updatedCommentsResponse.ok) {
                 throw new Error('Failed to fetch updated comments');
             }

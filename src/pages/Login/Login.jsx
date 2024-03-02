@@ -53,7 +53,7 @@ export default function Login() {
 
         if (formIsValid) {
             try {
-                const response = await fetch('http://localhost:3000/', {
+                const response = await fetch(`${BASE_URL}/`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

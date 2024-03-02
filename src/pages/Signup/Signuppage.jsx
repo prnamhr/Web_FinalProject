@@ -10,7 +10,7 @@ import {useState} from "react";
 import {useNavigate} from "react-router-dom";
 
 const defaultTheme = createTheme();
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 export default function Signup() {
     const [formData, setFormData] = useState({
         firstName: "",
@@ -53,7 +53,7 @@ export default function Signup() {
     };
     const checkUniqueEmail = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/signup/checkUniqueEmail?email=${formData.email}`);
+            const response = await fetch(`${BASE_URL}/signup/checkUniqueEmail?email=${formData.email}`);
             const data = await response.json();
 
             setIsUniqueEmail(data.isUnique);
@@ -71,7 +71,7 @@ export default function Signup() {
 
         if (formIsValid && isUniqueEmail) {
             try {
-                const response = await fetch("http://localhost:3000/signup", {
+                const response = await fetch(`${BASE_URL}/signup`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -94,7 +94,6 @@ export default function Signup() {
                 console.log("Signup successful");
             } catch (error) {
                 console.error("Signup error:", error.message);
-                setError(error.message); // Error is not defined; you might want to declare 'setError'
             }
         } else {
             console.error("Form is not valid or email is not unique");

@@ -20,7 +20,7 @@ import './index.css';
 import Masonry from 'react-masonry-css';
 import PersonIcon from "@mui/icons-material/Person.js";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const Home = () => {
     const [username,setUsername] =useState();
     const [pins, setPins] = useState([]);
@@ -53,7 +53,7 @@ const Home = () => {
 
     const searchUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
+            const response = await fetch(`${BASE_URL}/${searchInput}/finduser`);
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }
@@ -77,7 +77,7 @@ const Home = () => {
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${username}/finduser`);
+                const response = await fetch(`${BASE_URL}/${username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -99,7 +99,7 @@ const Home = () => {
     useEffect(() => {
         const fetchPins = async () => {
             try {
-                const response = await fetch('http://localhost:3000/pins');
+                const response = await fetch(`${BASE_URL}/pins`);
                 const data = await response.json();
                 setPins(data);
             } catch (error) {

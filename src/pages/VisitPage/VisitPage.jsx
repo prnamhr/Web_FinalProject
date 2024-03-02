@@ -12,7 +12,7 @@ import {Dialog, DialogTitle, DialogContent} from '@mui/material';
 import Masonry from "react-masonry-css";
 import Pin from "../Home/Pin.jsx";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const VisitPage = () => {
     const { usernameVisit} = useParams();
     const [username,setUsername] =useState();
@@ -44,7 +44,7 @@ const VisitPage = () => {
         setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response2 = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response2 = await fetch(`${BASE_URL}/${userAuth.username}/finduser`);
                 if (!response2.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -55,7 +55,7 @@ const VisitPage = () => {
                     setImageSrc2(imageUrl2);
                 }
 
-                const response = await fetch(`http://localhost:3000/${usernameVisit}/finduser`);
+                const response = await fetch(`${BASE_URL}/${usernameVisit}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -69,7 +69,7 @@ const VisitPage = () => {
 
                 const fetchFollowersCount = async () => {
                     try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/followers`);
+                        const response = await fetch(`${BASE_URL}/user/${data[0].user_id}/followers`);
                         if (response.ok) {
                             const followers = await response.json();
                             setFollowersCount(followers.length);
@@ -80,7 +80,7 @@ const VisitPage = () => {
                 };
                 const fetchFollowingCount = async () => {
                     try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
+                        const response = await fetch(`${BASE_URL}/user/${data[0].user_id}/following`);
                         if (response.ok) {
                             const following = await response.json();
                             console.log(following)
@@ -93,7 +93,7 @@ const VisitPage = () => {
 
                 const fetchFollowingStatus = async () => {
                     try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/following`);
+                        const response = await fetch(`${BASE_URL}/user/${data[0].user_id}/following`);
                         if (response.ok) {
                             const following = await response.json();
                             const statusMap = {};
@@ -108,7 +108,7 @@ const VisitPage = () => {
                 };
                 const fetchPosts = async () => {
                     try {
-                        const response = await fetch(`http://localhost:3000/user/${data[0].user_id}/posts`);
+                        const response = await fetch(`${BASE_URL}/user/${data[0].user_id}/posts`);
                         if (response.ok) {
                             const following = await response.json();
                             console.log(following)
@@ -137,7 +137,7 @@ const VisitPage = () => {
         };
         try {
 
-            const response = await fetch(`http://localhost:3000/post/${username}/follow`, {
+            const response = await fetch(`${BASE_URL}/post/${username}/follow`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ const VisitPage = () => {
 
     const searchUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
+            const response = await fetch(`${BASE_URL}/${searchInput}/finduser`);
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }
@@ -209,7 +209,7 @@ const VisitPage = () => {
 
     const handleFollowersClick = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/followers`);
+            const response = await fetch(`${BASE_URL}/user/${userData.user_id}/followers`);
             if (response.ok) {
                 const followers = await response.json();
                 console.log(followers)
@@ -225,7 +225,7 @@ const VisitPage = () => {
 
     const handleFollowingClick = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/following`);
+            const response = await fetch(`${BASE_URL}/user/${userData.user_id}/following`);
             if (response.ok) {
                 const following = await response.json();
                 if (following.length > 0) {

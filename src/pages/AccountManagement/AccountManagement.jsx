@@ -22,11 +22,11 @@ import {
     DialogActions,
 } from '@mui/material';
 import PersonIcon from "@mui/icons-material/Person.js";
-import {Link, useParams} from "react-router-dom";
+import {Link} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const AccountManagement = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -62,7 +62,7 @@ const AccountManagement = () => {
         setUsername(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response = await fetch(`${BASE_URL}/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -95,7 +95,7 @@ const AccountManagement = () => {
             gender: gender,
         };
         try {
-            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/account`, {
+            const response = await fetch(`${BASE_URL}/user/${userData.user_id}/account`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ const AccountManagement = () => {
         try {
             // Perform the delete operation
 
-            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/delete`, {
+            const response = await fetch(`${BASE_URL}/user/${userData.user_id}/delete`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -157,7 +157,7 @@ const AccountManagement = () => {
 
     const searchUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
+            const response = await fetch(`${BASE_URL}/${searchInput}/finduser`);
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }

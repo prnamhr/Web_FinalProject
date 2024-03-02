@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 export default function FindUser() {
     const { username } = useParams();
     const navigate = useNavigate();
@@ -9,7 +9,7 @@ export default function FindUser() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/forgotpassword/${username}/findUser`);
+                const response = await fetch(`${BASE_URL}/forgotpassword/${username}/findUser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }

@@ -10,6 +10,7 @@ const Pin = ({ post }) => {
     const [isSaved, setIsSaved] = useState(false);
     const [userData, setUserData] = useState(null);
     const [username,setUsername] =useState();
+    const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
     const handleSave = async () => {
         if(!userData.user_id){
             return;
@@ -19,7 +20,7 @@ const Pin = ({ post }) => {
         };
         try {
 
-            const response = await fetch(`http://localhost:3000/post/${post.post_id}/savePost`, {
+            const response = await fetch(`${BASE_URL}/post/${post.post_id}/savePost`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -57,13 +58,13 @@ const Pin = ({ post }) => {
         setUsername(userAuth.username)
         const fetchPostData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response = await fetch(`${BASE_URL}/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
                 const data = await response.json();
                 setUserData(data[0])
-                const saveResponse = await fetch(`http://localhost:3000/post/${data[0].user_id}/${post.post_id}/isSaved`);
+                const saveResponse = await fetch(`${BASE_URL}/post/${data[0].user_id}/${post.post_id}/isSaved`);
                 if (!saveResponse.ok) {
                     throw new Error('Failed to fetch follow status');
                 }

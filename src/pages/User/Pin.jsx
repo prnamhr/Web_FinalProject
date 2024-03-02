@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Card, CardMedia, Button } from '@mui/material';
 import {useParams} from "react-router-dom";
 
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const Pin = ({ post }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [imageSrc, setImageSrc] = useState('');
@@ -19,7 +19,7 @@ const Pin = ({ post }) => {
         };
         try {
 
-            const response = await fetch(`http://localhost:3000/post/${post.post_id}/savePost`, {
+            const response = await fetch(`${BASE_URL}/post/${post.post_id}/savePost`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -58,13 +58,13 @@ const Pin = ({ post }) => {
         setUsername(userAuth.username)
         const fetchPostData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response = await fetch(`${BASE_URL}/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
                 const data = await response.json();
                 setUserData(data[0])
-                const saveResponse = await fetch(`http://localhost:3000/post/${data[0].user_id}/${post.post_id}/isSaved`);
+                const saveResponse = await fetch(`${BASE_URL}/post/${data[0].user_id}/${post.post_id}/isSaved`);
                 if (!saveResponse.ok) {
                     throw new Error('Failed to fetch follow status');
                 }

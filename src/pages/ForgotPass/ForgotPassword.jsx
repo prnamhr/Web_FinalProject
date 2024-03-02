@@ -9,7 +9,7 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import {Link} from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import {useState} from 'react'
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const defaultTheme = createTheme();
 import './index.css'
 
@@ -29,7 +29,7 @@ export default function ForgotPassword() {
             return;
         }
         try {
-            const response = await fetch(`http://localhost:3000/forgotpassword`, {
+            const response = await fetch(`${BASE_URL}/forgotpassword`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

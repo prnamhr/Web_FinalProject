@@ -18,7 +18,7 @@ import {Link} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search.js";
 import MoreVertIcon from "@mui/icons-material/MoreVert.js";
 import DropdownMenu from '../Creation/DropdownMenu.jsx'
-
+const BASE_URL= import.meta.env.VITE_BACKEND_BASE_URL;
 const EditProfile = () => {
     const [name, setName] = useState('');
     const [surname, setsurname] = useState('');
@@ -35,6 +35,7 @@ const EditProfile = () => {
     const navigate = useNavigate();
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [username,setUsername2] =useState();
+
     const searchStyle = {
         position: 'relative',
         borderRadius: '20px',
@@ -48,7 +49,7 @@ const EditProfile = () => {
         e.preventDefault();
         if (use) {
             try {
-                const response = await fetch(`http://localhost:3000/${use}/finduser`);
+                const response = await fetch(`${BASE_URL}/${use}/finduser`);
                 if (response.ok) {
                     const data = await response.json();
                     if (data.length > 0) {
@@ -74,7 +75,7 @@ const EditProfile = () => {
         };
 
         try {
-            const response = await fetch(`http://localhost:3000/user/${userData.user_id}/update`, {
+            const response = await fetch(`${BASE_URL}/user/${userData.user_id}/update`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -99,7 +100,7 @@ const EditProfile = () => {
                 const formData = new FormData();
                 formData.append('photo', file);
 
-                const response2 = await fetch(`http://localhost:3000/user/${userData.user_id}/photo`, {
+                const response2 = await fetch(`${BASE_URL}/user/${userData.user_id}/photo`, {
                     method: 'POST',
                     body: formData, // Send formData with the file
                 });
@@ -129,7 +130,7 @@ const EditProfile = () => {
         setUsername2(userAuth.username)
         const fetchUserData = async () => {
             try {
-                const response = await fetch(`http://localhost:3000/${userAuth.username}/finduser`);
+                const response = await fetch(`${BASE_URL}/${userAuth.username}/finduser`);
                 if (!response.ok) {
                     throw new Error('Failed to fetch user data');
                 }
@@ -174,7 +175,7 @@ const EditProfile = () => {
 
     const searchUsers = async () => {
         try {
-            const response = await fetch(`http://localhost:3000/${searchInput}/finduser`);
+            const response = await fetch(`${BASE_URL}/${searchInput}/finduser`);
             if (!response.ok) {
                 throw new Error('Failed to fetch users');
             }
