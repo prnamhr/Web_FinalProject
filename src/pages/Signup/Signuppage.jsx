@@ -133,7 +133,7 @@ export default function Signup() {
                         </Typography>
                     </Link>
                     <img
-                        src="/Login/Logo.jpg"
+                        src={`https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/uploads%2FLogo.png?alt=media&token=776b5284-9d23-4a29-8db5-5acbb6607f56`}
                         alt="Pinterest Logo"
                         style={{width: "180px", height: "180px"}}
                     />

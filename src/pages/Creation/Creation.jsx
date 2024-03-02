@@ -181,7 +181,7 @@ const Creation = () => {
             <div className='toolbar'>
                 <AppBar position='static' color='default' elevation={0}>
                     <Toolbar sx={{backgroundColor: '#193a3f', color: '#75868e'}}>
-                        <img src='/pic/logo.png' alt='Logo' style={{width: '30px', height: '30px'}}/>
+                        <img  src={`https://firebasestorage.googleapis.com/v0/b/images-a532a.appspot.com/o/uploads%2FLogo.png?alt=media&token=776b5284-9d23-4a29-8db5-5acbb6607f56`} alt='Logo' style={{width: '30px', height: '30px'}}/>
                         <Grid container margin='10px'>
                             <Grid item style={{marginRight: '3px'}}>
                                 <Link to={`/inside`} style={{textDecoration: 'none'}}>
